@@ -22,6 +22,9 @@ function log(text) {
   console.log(text);
 }
 
+var extra = 0;
+var play_cards = [];
+
 /*******************************************************************************
 * here we load the cards
 */
@@ -95,6 +98,7 @@ s.on('state', function (data) {
 s.on('event', function (data) {
   log('player event: ' + data);
   switch(data[0]) {
+    case e_draw: add_hand(data[1]); break;
     case e_play: add_blank(); break;
     case e_show: add_whites(data[1], data[2]); break;
     default: break;
@@ -107,12 +111,34 @@ s.on('event', function (data) {
 */
 function update_black(id) {
   $('#black_text').text(blacks[id][0]);
-  var extra = blacks[id][1];
+  extra = blacks[id][1];
   if (extra > 0) {
     $('#black_extra').text('draw ' + (extra + 1));
     $('#black_extra').removeClass('hidden');
   } else {
     $('#black_extra').addClass('hidden');
+  }
+}
+
+/*******************************************************************************
+* adds a received card to the user's hand
+*/
+function add_hand(id) {
+  var html = '<div class="card white" onclick="prepare_to_play($(this))" ';
+  html += 'white_id="' + id + '">' + whites[id] + '</div>';
+  $('#right').append(html);
+}
+
+/*******************************************************************************
+* staging for playing a set of cards
+*/
+function prepare_to_play(card_element) {
+  var id = parseInt(card_element.attr('white_id'));
+  play_cards.push(id);
+  card_element.remove();
+  if (play_cards.length == extra + 1) {
+    play(play_cards);
+    play_cards = [];
   }
 }
 
