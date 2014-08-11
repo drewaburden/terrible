@@ -22,8 +22,12 @@ function log(text) {
   console.log(text);
 }
 
+var state;
+var my_username;
 var extra = 0;
 var play_cards = [];
+var current_judge;
+var played;
 
 /*******************************************************************************
 * here we load the cards
@@ -42,7 +46,7 @@ function load() {
 * here we start the game
 */
 function init() {
-  
+  state = s_init;
 }
 
 /*******************************************************************************
@@ -53,6 +57,7 @@ function request(payload) {
 }
 
 function join(username) {
+  my_username = username;
   s.emit("req", [e_join, username]);
   $('#overlay').addClass('hidden');
   $('#overlay_join').addClass('hidden');
@@ -84,9 +89,10 @@ s.on('msg', function (data) {
 */
 s.on('state', function (data) {
   log('new game state: ' + data);
-  switch(data[0]) {
+  state = data[0];
+  switch(state) {
     case s_lobby: $('#black_text').text('Waiting for players...'); break;
-    case s_playing: clear_center(); update_black(data[1]); break;
+    case s_playing: roundInit(data[1]); break;
     case s_judging: clear_center(); break;
     default: break;
   }
@@ -101,10 +107,10 @@ s.on('event', function (data) {
     case e_draw: add_hand(data[1]); break;
     case e_play: add_blank(); break;
     case e_show: add_whites(data[1], data[2]); break;
+    case e_judg: setJudge(data[1]); break;
     default: break;
   }
 });
-
 
 /*******************************************************************************
 * set the current black card
@@ -117,6 +123,30 @@ function update_black(id) {
     $('#black_extra').removeClass('hidden');
   } else {
     $('#black_extra').addClass('hidden');
+  }
+}
+
+function roundInit(black) {
+  $('#judge_overlay').addClass('hidden');
+  $('#center').removeClass('active');
+  $('#right').addClass('active');
+  clear_center();
+  update_black(black);
+  played = false;
+}
+
+/*******************************************************************************
+* set the current judge
+*/
+function setJudge(username) {
+  log('hi');
+  log(username);
+  current_judge = username;
+  log(current_judge)
+  // place screen over hand if judge
+  if (my_username == current_judge) {
+    $('#judge_overlay').removeClass('hidden');
+    $('#center').addClass('active');
   }
 }
 
@@ -133,12 +163,17 @@ function add_hand(id) {
 * staging for playing a set of cards
 */
 function prepare_to_play(card_element) {
+  if (state != s_playing || current_judge == my_username || played) {
+    return;
+  }
   var id = parseInt(card_element.attr('white_id'));
   play_cards.push(id);
   card_element.remove();
   if (play_cards.length == extra + 1) {
     play(play_cards);
     play_cards = [];
+    $('#right').removeClass('active');
+    played = true;
   }
 }
 

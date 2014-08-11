@@ -216,6 +216,7 @@ function remove_player(socket) {
     // remove the user's cards from play otherwise
     else {
       delete round_whites[id];
+      round_players--;
     }
   }
 }
