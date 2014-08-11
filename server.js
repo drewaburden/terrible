@@ -30,6 +30,7 @@ var e_draw = 2;
 var e_play = 3;
 var e_show = 4;
 var e_pick = 5;
+var e_judg = 6;
 
 // cards are referenced by simple numerical index
 blacks = require(__dirname + '/public/blacks.json');
@@ -37,6 +38,7 @@ whites = require(__dirname + '/public/whites.json');
 var whites_draw;
 
 // because players can leave during the game, they are referenced by id
+var waiting;
 var players;
 var socket_lookup;
 
@@ -113,7 +115,7 @@ io.on('connection', function (socket) {
   socket.on('req', function (data) {
     switch (data[0]) {
       case e_join: add_player(socket, data[1]); break;
-      case e_quit: break;
+      case e_quit: remove_player(socket); break;
       case e_play: play_whites(socket_lookup[socket.id], data[1]); break;
       case e_pick: pick_winner(socket_lookup[socket.id], data[1]); break;
     }
@@ -161,8 +163,8 @@ function add_player(socket, name) {
   }
 
   // add player to list
-  players[name] = {ip: ip, name: name, score: 0, whites: [], socket:
-    socket.id};
+  players[name] = {ip: ip, name: name, score: 0, whites: [], waiting: true,
+    socket: socket.id};
   socket_lookup[socket.id] = name;
   io.to('game').emit('event', [e_join, name]);
 
@@ -194,17 +196,46 @@ function add_player(socket, name) {
 * PUBLIC
 * BROADCASTS
 */
-function remove_player(id) {
+function remove_player(socket) {
+  var id = socket_lookup[socket.id];
   if (debug) {
     log('  player ' + id + ' removed');
   }
+  var waiting = players[id]['waiting']
   delete players[id];
+  delete socket_lookup[socket.id];
   io.to('game').emit('event', [e_quit, id]);
-  if (_.size(players) == 2) {
-    if (debug) {
-      log('not enough players, returning to lobby');
+  
+  // not enough players for the round
+  if (round_players == 2 && !waiting) {
+    // enough players for a new one
+    if (_.size(players) > 2) {
+      if (debug) {
+        log('  not enough players, starting a new round');
+      }
+      setTimeout(start_round, state_switch_time);
     }
-    setTimeout(goto_lobby, state_switch_time);
+    // not enough; go to lobby
+    else {
+      if (debug) {
+        log('  not enough players, returning to lobby');
+      }
+      setTimeout(start_lobby, state_switch_time);
+    }
+  }
+  // handle some cases if a round is going
+  else if (round_state == s_playing) {
+    // the judge quit, start a new round
+    if (round_judge == id) {
+      setTimeout(start_round, state_switch_time);
+      if (debug) {
+        log('  the judge quit, starting a new round');
+      }
+    }
+    // remove the user's cards from play otherwise
+    else {
+      delete round_whites[id];
+    }
   }
 }
 
@@ -259,6 +290,7 @@ function start_round() {
   // draw enough cards for round
   round_whites = {};
   for (p in players) {
+    players[p]['waiting'] = false; // set all new joiners active
     var missing = draw_amount - players[p]['whites'].length;
     for (var i = 0; i < missing; i++) {
       draw_white(p);
@@ -271,6 +303,7 @@ function start_round() {
     }
   }
   io.to('game').emit('state', [round_state, round_black]);
+  io.to('game').emit('event', [e_judg, round_judge]);
 }
 
 /*******************************************************************************

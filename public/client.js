@@ -14,6 +14,7 @@ var e_draw = 2;
 var e_play = 3;
 var e_show = 4;
 var e_pick = 5;
+var e_judg = 6;
 
 var blacks, whites;
 
@@ -41,15 +42,19 @@ function request(payload) {
 }
 
 function join(username) {
-  s.emit("req", [0, username]);
+  s.emit("req", [e_join, username]);
 }
 
 function play(cards) {
-  s.emit("req", [3, cards]);
+  s.emit("req", [e_play, cards]);
 }
 
 function pick(user) {
-  s.emit("req", [5, user]);
+  s.emit("req", [e_pick, user]);
+}
+
+function quit() {
+  s.emit("req", [e_quit]);
 }
 
 /*******************************************************************************
