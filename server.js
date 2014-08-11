@@ -1,6 +1,8 @@
 global.__base = __dirname + '/';
 global._ = require(__base + '/lib/underscore');
 
+require(__base + '/shared/constants');
+
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -38,8 +40,8 @@ var e_pick = 5;
 var e_judg = 6;
 
 // cards are referenced by simple numerical index
-blacks_default = require(__base + '/public/blacks.json');
-whites_default = require(__base + '/public/whites.json');
+blacks_default = require(__base + '/shared/blacks.json');
+whites_default = require(__base + '/shared/whites.json');
 var Deck;
 
 // because players can leave during the game, they are referenced by id
@@ -89,11 +91,11 @@ app.get('/client.js', function (req, res) {
 });
 
 app.get('/blacks.json', function (req, res) {
-  res.sendFile(__base + '/public/blacks.json');
+  res.sendFile(__base + '/shared/blacks.json');
 });
 
 app.get('/whites.json', function (req, res) {
-  res.sendFile(__base + '/public/whites.json');
+  res.sendFile(__base + '/shared/whites.json');
 });
 
 app.use(function(req, res){
@@ -125,7 +127,7 @@ io.on('connection', function (socket) {
 * BROADCASTS
 */
 function start_lobby() {
-  RoundMgr.setState(RoundState.S_LOBBY);
+  RoundMgr.setState(STATES.LOBBY);
   io.to('game').emit('state', [RoundMgr.getState()]);
   if (debug) {
     log('STATE: LOBBY (waiting for players)');
@@ -202,7 +204,7 @@ function remove_player(socket) {
     }
   }
   // handle some cases if a round is going
-  else if (RoundMgr.getState() == RoundState.S_PLAYING) {
+  else if (RoundMgr.getState() == STATES.PLAYING) {
     // the judge quit, start a new round
     if (RoundMgr.getJudge() == id) {
       setTimeout(start_round, state_switch_time);
@@ -246,7 +248,7 @@ function get_next_player(id) {
 * BROADCASTS
 */
 function start_round() {
-  RoundMgr.setState(RoundState.S_PLAYING);
+  RoundMgr.setState(STATES.PLAYING);
   RoundMgr.setPlayers(_.size(players) - 1);
 
   // pick random question and set up extra draws
@@ -343,7 +345,7 @@ function play_whites(p_id, whites) {
 * BROADCASTS
 */
 function start_judging() {
-  RoundMgr.setState(RoundState.S_JUDGING);
+  RoundMgr.setState(STATES.JUDGING);
   io.to('game').emit('state', [RoundMgr.getState()]);
   // reveal cards to everyone
   for (p_id in RoundMgr.getWhites()) {
@@ -390,7 +392,7 @@ function pick_winner(p_id, winner) {
 * BROADCASTS
 */
 function start_intermission() {
-  RoundMgr.setState(RoundState.S_INTERMISSION);
+  RoundMgr.setState(STATES.INTERMISSION);
   io.to('game').emit('state', [RoundMgr.getState()]);
   if (debug) {
     log('STATE: INTERMISSION (judged; waiting for next round)');
