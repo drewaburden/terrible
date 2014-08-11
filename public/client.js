@@ -82,7 +82,9 @@ s.on('msg', function (data) {
 s.on('state', function (data) {
   console.log('new game state: ' + data);
   switch(data[0]) {
+    case s_lobby: $('#black_text').text('Waiting for players...'); break;
     case s_playing: update_black(data[1]); break;
+    case s_judging: clear_center(); break;
     default: break;
   }
 });
@@ -93,6 +95,7 @@ s.on('state', function (data) {
 s.on('event', function (data) {
   console.log('player event: ' + data);
   switch(data[0]) {
+    case e_play: add_blank(); break;
     default: break;
   }
 });
@@ -110,4 +113,18 @@ function update_black(id) {
   } else {
     $('#black_extra').addClass('hidden');
   }
+}
+
+/*******************************************************************************
+* clears the center to make way for new cards
+*/
+function clear_center() {
+  $('#center').innerHTML('');
+}
+
+/*******************************************************************************
+* adds a blank card to the center
+*/
+function add_blank() {
+  $('#center').append('<div class="card white">&nbsp;</div>');
 }

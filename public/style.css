@@ -7,11 +7,11 @@ body, html { padding: 0; margin: 0; width: 100%; height: 100%; }
 #center { left: 25%; width: 50%; background: #ddd; z-index: 10; }
 #right { left: 75%; box-shadow: -5px 5px 20px 0 #bbb; }
 
-.card { padding: 10px 15px; font-weight: bold; font-size: 150%; }
+.card { padding: 10px 15px; font-weight: bold; font-size: 150%; min-height: 1em; }
 .card.black { width: 100%; background: #111; color: #fff; }
 #black_extra { font-size: 50%; background: #555; padding: 3px 5px; white-space: nowrap; }
 .card.white { background: #fff; color: #111; }
-#played .card { width: 50%; float: left; }
+#center .card { width: 50%; float: left; }
 #hand .card { width: 100%; }
 
 .hidden { display: none; }
