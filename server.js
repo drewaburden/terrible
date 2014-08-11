@@ -1,7 +1,10 @@
+global.__base = __dirname + '/';
+global._ = require(__base + '/lib/underscore');
+
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var _ = require(__dirname + '/lib/underscore');
+var DeckManager = require(__base + '/lib/DeckManager');
 
 // game settings
 var servee_port = 8080;
@@ -33,9 +36,9 @@ var e_pick = 5;
 var e_judg = 6;
 
 // cards are referenced by simple numerical index
-blacks = require(__dirname + '/public/blacks.json');
-whites = require(__dirname + '/public/whites.json');
-var whites_draw;
+blacks_default = require(__base + '/public/blacks.json');
+whites_default = require(__base + '/public/whites.json');
+var Deck;
 
 // because players can leave during the game, they are referenced by id
 var waiting;
@@ -62,7 +65,7 @@ function init() {
   server.listen(servee_port);
   round_state = -1;
   log('STATE: INIT (setting up server)');
-  whites_draw = [];
+  Deck = new DeckManager.DeckManager(blacks_default, whites_default);
   players = {};
   socket_lookup = {};
   start_lobby();
@@ -73,27 +76,27 @@ function init() {
 * PUBLIC
 */
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(__base + '/public/index.html');
 });
 
 app.get('/style.css', function (req, res) {
-  res.sendFile(__dirname + '/public/style.css');
+  res.sendFile(__base + '/public/style.css');
 });
 
 app.get('/socket.io.js', function (req, res) {
-  res.sendFile(__dirname + '/public/socket.io.js');
+  res.sendFile(__base + '/public/socket.io.js');
 });
 
 app.get('/client.js', function (req, res) {
-  res.sendFile(__dirname + '/public/client.js');
+  res.sendFile(__base + '/public/client.js');
 });
 
 app.get('/blacks.json', function (req, res) {
-  res.sendFile(__dirname + '/public/blacks.json');
+  res.sendFile(__base + '/public/blacks.json');
 });
 
 app.get('/whites.json', function (req, res) {
-  res.sendFile(__dirname + '/public/whites.json');
+  res.sendFile(__base + '/public/whites.json');
 });
 
 app.use(function(req, res){
@@ -130,17 +133,6 @@ function start_lobby() {
   if (debug) {
     log('STATE: LOBBY (waiting for players)');
   }
-}
-
-/*******************************************************************************
-* shuffles available white cards
-* PRIVATE
-*/
-function shuffle_whites() {
-  if (debug) {
-    log('  new game or cards run out; shuffling whites');
-  }
-  whites_draw = _.shuffle(_.range(whites.length));
 }
 
 /*******************************************************************************
@@ -261,12 +253,12 @@ function start_round() {
   round_players = _.size(players) - 1;
 
   // pick random question and set up extra draws
-  round_black = Math.floor((Math.random() * blacks.length));
-  round_extra_whites = blacks[round_black][1];
+  round_black = Deck.getBlackCard();
+  round_extra_whites = round_black[1];
 
   if (debug) {
     log('STATE: PLAYING (a new round has started; dealing cards)');
-    log('  black is ' + round_black + ': "' + blacks[round_black][0] + '"');
+    log('  black is ' + round_black[0]);
     if (round_extra_whites > 0) {
       log('  players must play ' + round_extra_whites + ' extra white(s)');
     }
@@ -291,7 +283,7 @@ function start_round() {
       }
     }
   }
-  io.to('game').emit('state', [round_state, round_black]);
+  io.to('game').emit('state', [round_state, round_black[0]]);
   io.to('game').emit('event', [e_judg, round_judge]);
 }
 
@@ -301,10 +293,7 @@ function start_round() {
 * BROADCASTS
 */
 function draw_white(p_id) {
-  if (whites_draw.length == 0) {
-    shuffle_whites();
-  }
-  white = whites_draw.pop();
+  var white = Deck.getWhiteCard();
   if (debug) {
     log('    player ' + p_id + ' receives card ' + white);
   }
