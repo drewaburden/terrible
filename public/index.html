@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>terrible</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="socket.io.js"></script>
+<script type="text/javascript" src="client.js"></script>
+</head>
+<body onload="init()">
+<h1>how to test via console</h1>
+
+<h2>joining</h2>
+<p><strong>join('username');</strong><br>
+users are unique by name, so you can use three browser tabs with different usernames</p>
+
+<h2>playing cards</h2>
+<p><strong>play([card_id]);</strong><br>
+card ids are seen in browser console with event type 2</p>
+
+<h2>picking a winner</h2>
+<p><strong>pick('username');</strong><br>
+usernames are seen in browser console with event type 0
+</p>
+</body>
+</html>
