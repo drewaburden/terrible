@@ -73,17 +73,17 @@ function quit() {
 * message handling
 */
 s.on('msg', function (data) {
-  console.log(data);
+  log(data);
 });
 
 /*******************************************************************************
 * state change handling
 */
 s.on('state', function (data) {
-  console.log('new game state: ' + data);
+  log('new game state: ' + data);
   switch(data[0]) {
     case s_lobby: $('#black_text').text('Waiting for players...'); break;
-    case s_playing: update_black(data[1]); break;
+    case s_playing: clear_center(); update_black(data[1]); break;
     case s_judging: clear_center(); break;
     default: break;
   }
@@ -93,9 +93,10 @@ s.on('state', function (data) {
 * event handling
 */
 s.on('event', function (data) {
-  console.log('player event: ' + data);
+  log('player event: ' + data);
   switch(data[0]) {
     case e_play: add_blank(); break;
+    case e_show: add_whites(data[1], data[2]); break;
     default: break;
   }
 });
@@ -116,15 +117,37 @@ function update_black(id) {
 }
 
 /*******************************************************************************
-* clears the center to make way for new cards
+* clears the center pane
 */
 function clear_center() {
-  $('#center').innerHTML('');
+  // TODO: why does calling this reset the game
+  $('#center').empty();
 }
 
 /*******************************************************************************
 * adds a blank card to the center
 */
 function add_blank() {
-  $('#center').append('<div class="card white">&nbsp;</div>');
+  $('#center').append('<div class="cards"><div class="card white">&nbsp;</div></div>');
 }
+
+/*******************************************************************************
+* adds judgeable whites to the center
+*/
+function add_whites(user, cards) {
+  var html = '<div class="cards" onclick="pick(\'' + user + '\')">';
+  for (var i = 0; i < cards.length; i++) {
+    html += '<div class="card white">' + whites[cards[i]] + '</div>';
+  }
+  html += '</div>';
+  $('#center').append(html);
+}
+
+
+/*******************************************************************************
+* click handlers
+*/
+/*$('body').on('click', '.cards', function(event) {
+  alert('hi');
+  //pick($(this).attr('player'));
+});*/

@@ -361,7 +361,7 @@ function start_judging() {
   io.to('game').emit('state', [round_state]);
   // reveal cards to everyone
   for (p_id in round_whites) {
-    io.to('game').emit('event', [p_id, round_whites[p_id]]);
+    io.to('game').emit('event', [e_show, p_id, round_whites[p_id]]);
   }
   if (debug) {
     log('STATE: JUDGING (all users have played, judging begins)');
