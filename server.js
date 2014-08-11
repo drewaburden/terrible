@@ -109,9 +109,6 @@ io.on('connection', function (socket) {
   log('INFO: ' + socket.handshake.address.address + ' connected');
   socket.join('login');
   socket.emit('msg', 'please connect with your name');
-  
-  //io.emit('msg', "THIS IS FOR EVERYONE");
-
   socket.on('req', function (data) {
     switch (data[0]) {
       case e_join: add_player(socket, data[1]); break;
