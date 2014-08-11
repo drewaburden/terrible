@@ -46,6 +46,7 @@ var round_judge;
 var round_black;
 var round_whites;
 var round_extra_whites;
+var round_players; // number of users that will play white cards
 
 function log(text) {
   console.log(text);
@@ -153,24 +154,38 @@ function add_player(socket, name) {
   if (debug) {
     log('  ' + ip + ' joined as ' + name);
   }
+
   // send current client list to joining player
   for (p in players) {
     socket.emit('event', [e_join, p]);
   }
+
   // add player to list
   players[name] = {ip: ip, name: name, score: 0, whites: [], socket:
     socket.id};
   socket_lookup[socket.id] = name;
   io.to('game').emit('event', [e_join, name]);
+
+  // add user to the game room
+  socket.leave('login');
+  socket.join('game');
+  socket.emit('msg', 'you have joined the game, ' + name);
+
+  // start the game if this makes enough players
   if (_.size(players) == 3) {
     if (debug) {
       log('  enough players have joined, starting');
     }
     setTimeout(start_round, state_switch_time);
   }
-  socket.leave('login');
-  socket.join('game');
-  socket.emit('msg', 'you have joined the game, ' + name);
+  /* DEPRECATED: using alternate method (round_players)
+  // if joining during the hand, force play a dummy hand [-1]
+  else if (round_state == s_playing) {
+    play_whites(name, [-1]);
+    if (debug) {
+      log('  player ' + name + ' joined during playing; forcing dummy hand');
+    }
+  }*/
   return true;
 }
 
@@ -223,6 +238,7 @@ function get_next_player(id) {
 */
 function start_round() {
   round_state = s_playing;
+  round_players = _.size(players) - 1;
 
   // pick random question and set up extra draws
   round_black = Math.floor((Math.random() * blacks.length));
@@ -306,7 +322,7 @@ function play_whites(p_id, whites) {
     log('  player ' + p_id + ' played cards [' + whites + ']');
   }
   // if everyone's played, move to judging
-  if (_.size(round_whites) == _.size(players) - 1) {
+  if (_.size(round_whites) == round_players) {
     setTimeout(start_judging, state_switch_time);
   }
   io.to('game').emit('event', [e_play, p_id]);
