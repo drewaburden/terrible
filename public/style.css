@@ -1,0 +1,30 @@
+* { font-family: "Helvetica Neue", Arial, Helvetica, sans-serif; box-sizing: border-box; -moz-box-sizing: border-box; } 
+body, html { padding: 0; margin: 0; width: 100%; height: 100%; }
+#container { position: relative; width: 100%; height: 100%; }
+
+.pane { position: absolute; top: 0; height: 100%; width: 25%; padding: 10px 15px; background: #eee; z-index: 20; }
+#left { left: 0%; box-shadow: 5px 5px 20px 0 #bbb; }
+#center { left: 25%; width: 50%; background: #ddd; z-index: 10; }
+#right { left: 75%; box-shadow: -5px 5px 20px 0 #bbb; }
+
+.card { padding: 10px 15px; font-weight: bold; font-size: 150%; }
+.card.black { width: 100%; background: #111; color: #fff; }
+#black_extra { font-size: 50%; background: #555; padding: 3px 5px; white-space: nowrap; }
+.card.white { background: #fff; color: #111; }
+#played .card { width: 50%; float: left; }
+#hand .card { width: 100%; }
+
+.hidden { display: none; }
+
+#overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 95%;
+	height: 95%;
+	background: #ddd;
+	z-index: 30;
+	margin: 2.5%;
+	box-shadow: 0 0 20px 0 #333;
+	padding: 10px 15px;
+}

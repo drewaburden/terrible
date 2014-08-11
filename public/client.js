@@ -25,13 +25,21 @@ function log(text) {
 /*******************************************************************************
 * here we load the cards
 */
-function init() {
+function load() {
   $.getJSON("blacks.json", function (data) {
     blacks = data;
+    $.getJSON("whites.json", function (data) {
+      whites = data;
+      init();
+    });
   });
-  $.getJSON("whites.json", function (data) {
-    whites = data;
-  });
+}
+
+/*******************************************************************************
+* here we start the game
+*/
+function init() {
+  
 }
 
 /*******************************************************************************
@@ -43,6 +51,8 @@ function request(payload) {
 
 function join(username) {
   s.emit("req", [e_join, username]);
+  $('#overlay').addClass('hidden');
+  $('#overlay_join').addClass('hidden');
 }
 
 function play(cards) {
@@ -55,6 +65,8 @@ function pick(user) {
 
 function quit() {
   s.emit("req", [e_quit]);
+  $('#overlay_join').removeClass('hidden');
+  $('#overlay').removeClass('hidden');
 }
 
 /*******************************************************************************
@@ -69,6 +81,10 @@ s.on('msg', function (data) {
 */
 s.on('state', function (data) {
   console.log('new game state: ' + data);
+  switch(data[0]) {
+    case s_playing: update_black(data[1]); break;
+    default: break;
+  }
 });
 
 /*******************************************************************************
@@ -76,4 +92,22 @@ s.on('state', function (data) {
 */
 s.on('event', function (data) {
   console.log('player event: ' + data);
+  switch(data[0]) {
+    default: break;
+  }
 });
+
+
+/*******************************************************************************
+* set the current black card
+*/
+function update_black(id) {
+  $('#black_text').text(blacks[id][0]);
+  var extra = blacks[id][1];
+  if (extra > 0) {
+    $('#black_extra').text('draw ' + (extra + 1));
+    $('#black_extra').removeClass('hidden');
+  } else {
+    $('#black_extra').addClass('hidden');
+  }
+}

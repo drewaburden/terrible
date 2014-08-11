@@ -180,14 +180,6 @@ function add_player(socket, name) {
     }
     setTimeout(start_round, state_switch_time);
   }
-  /* DEPRECATED: using alternate method (round_players)
-  // if joining during the hand, force play a dummy hand [-1]
-  else if (round_state == s_playing) {
-    play_whites(name, [-1]);
-    if (debug) {
-      log('  player ' + name + ' joined during playing; forcing dummy hand');
-    }
-  }*/
   return true;
 }
 
