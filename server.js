@@ -153,6 +153,11 @@ function add_player(socket, name) {
   if (debug) {
     log('  ' + ip + ' joined as ' + name);
   }
+  // send current client list to joining player
+  for (p in players) {
+    socket.emit('event', [e_join, p]);
+  }
+  // add player to list
   players[name] = {ip: ip, name: name, score: 0, whites: [], socket:
     socket.id};
   socket_lookup[socket.id] = name;
