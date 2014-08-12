@@ -1,4 +1,4 @@
-exports.DeckManager = DeckManager;
+module.exports = DeckManager;
 function DeckManager(blacks, whites) {
 	this.blacks = blacks;
 	this.whites = whites;

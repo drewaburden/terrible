@@ -1,4 +1,4 @@
-exports.RoundManager = RoundManager;
+module.exports = RoundManager;
 function RoundManager() {
 	// round logic
 	this.round_state = STATES.INIT;
