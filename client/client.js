@@ -105,8 +105,8 @@ s.on('event', function (data) {
 function addUser(data) {
   var user = data[0];
   var score = data[1];
-  var html = '<div class="card white" user="' + user + '">' + user;
-  html += '</div>';
+  var html = '<div class="card white" user="' + user + '" score="' + score
+  html +='">' + user + ' (' + score + ')</div>';
   $('#scores').append(html);
 }
 
@@ -178,7 +178,6 @@ function prepare_to_play(card_element) {
 * clears the center pane
 */
 function clear_center() {
-  // TODO: why does calling this reset the game
   $('#center').empty();
 }
 
@@ -206,14 +205,10 @@ function add_whites(user, cards) {
 * winner was picked, highlight them
 */
 function winnerPicked(user) {
-  $("[user='" + user + "']").addClass('highlighted');
+  var winning_cards = $("#center [user='" + user + "']").addClass('highlighted');
+  var user_tile = $("#scores [user='" + user + "']");
+  user_tile.addClass('highlighted');
+  user_tile.attr('score', parseInt(user_tile.attr('score')) + 1);
+  var new_text = user_tile.attr('user') + ' (' + user_tile.attr('score') + ')';
+  user_tile.text(new_text);
 }
-
-
-/*******************************************************************************
-* click handlers
-*/
-/*$('body').on('click', '.cards', function(event) {
-  alert('hi');
-  //pick($(this).attr('player'));
-});*/
