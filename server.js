@@ -3,7 +3,8 @@ global._ = require(__base + '/server/underscore');
 
 require(__base + '/shared/constants');
 
-var app = require('express')();
+var express = require('express');
+var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var DeckManager = require(__base + '/server/DeckManager');
@@ -58,34 +59,8 @@ function init() {
 * handling of file requests
 * PUBLIC
 */
-app.get('/', function (req, res) {
-  res.sendFile(__base + '/client/index.html');
-});
-
-app.get('/style.css', function (req, res) {
-  res.sendFile(__base + '/client/style.css');
-});
-
-app.get('/socket.io.js', function (req, res) {
-  res.sendFile(__base + '/client/socket.io.js');
-});
-
-app.get('/constants.js', function (req, res) {
-  res.sendFile(__base + '/shared/constants.js');
-});
-
-app.get('/client.js', function (req, res) {
-  res.sendFile(__base + '/client/client.js');
-});
-
-app.get('/blacks.json', function (req, res) {
-  res.sendFile(__base + '/shared/blacks.json');
-});
-
-app.get('/whites.json', function (req, res) {
-  res.sendFile(__base + '/shared/whites.json');
-});
-
+app.use(express.static(__base + '/client'));
+app.use(express.static(__base + '/shared'));
 app.use(function(req, res){
   res.status(404).send('get out');
 });
@@ -94,7 +69,6 @@ app.use(function(req, res){
 * handling of client connections and requests
 * PUBLIC
 */
-
 io.on('connection', function (socket) {
   log('INFO: ' + socket.handshake.address.address + ' connected');
   socket.join('login');
@@ -283,14 +257,8 @@ function start_round() {
   // pick random question and set up extra draws
   RoundMgr.setBlack(Deck.getBlackCard()); //Should be done in RoundManager
   RoundMgr.setExtraWhites(RoundMgr.getBlack()[1]); //Should be done in RoundManager
-
-  if (debug) {
-    log('STATE: PLAYING (a new round has started; dealing cards)');
-    log('  black is ' + RoundMgr.getBlack()[0]);
-    if (RoundMgr.getExtraWhites() > 0) {
-      log('  players must play ' + RoundMgr.getExtraWhites() + ' extra white(s)');
-    }
-  }
+  log('STATE: PLAYING (new round started with black ' 
+    + RoundMgr.getBlack()[0] + ' [' + RoundMgr.getExtraWhites() + ' extra])');
 
   // decide who is judging
   RoundMgr.setJudge(get_next_player(RoundMgr.getJudge())); //Should be done in RoundManager
@@ -322,9 +290,6 @@ function start_round() {
 */
 function draw_white(p_id) {
   var white = Deck.getWhiteCard();
-  if (debug) {
-    log('    player ' + p_id + ' receives card ' + white);
-  }
   players[p_id]['whites'].push(white);
   io.to(players[p_id]['socket']).emit('event', [EVENTS.DRAW_CARD, white]);
 }
@@ -381,9 +346,7 @@ function start_judging() {
     io.to('game').emit('event', [EVENTS.SHOW_CARDS, p_id,
       RoundMgr.getWhites()[p_id]]);
   }
-  if (debug) {
-    log('STATE: JUDGING (all users have played, judging begins)');
-  }
+  log('STATE: JUDGING (all users have played, judging begins)');
 }
 
 /*******************************************************************************
@@ -405,14 +368,8 @@ function pick_winner(p_id, winner) {
     log('WARNING: winner ' + winner + ' not in game');
     return false;
   }
-  io.to('game').emit('event', [EVENTS.PICK_WINNER, winner]);
   players[winner]['score']++;
-  if (debug) {
-    log_msg = '  player ' + winner + ' was picked as winner, they have ';
-    log_msg += players[winner]['score'] + ' points';
-    log(log_msg);
-  }
-  setTimeout(start_intermission, state_switch_time);
+  setTimeout(start_intermission(winner), state_switch_time);
   return true;
 }
 
@@ -421,11 +378,11 @@ function pick_winner(p_id, winner) {
 * PRIVATE
 * BROADCASTS
 */
-function start_intermission() {
+function start_intermission(winner) {
   RoundMgr.setState(STATES.INTERMISSION);
-  io.to('game').emit('state', [RoundMgr.getState()]);
+  io.to('game').emit('state', [RoundMgr.getState(), winner]);
   if (debug) {
-    log('STATE: INTERMISSION (judged; waiting for next round)');
+    log('STATE: INTERMISSION (' + winner + ' won; waiting for next round)');
   }
   setTimeout(start_round, intermission_time);
 }

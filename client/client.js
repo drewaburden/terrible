@@ -77,7 +77,8 @@ s.on('state', function (data) {
   switch(state) {
     case global.STATES.LOBBY: $('#black_text').text('Waiting for players...'); break;
     case global.STATES.PLAYING: roundInit(data[1]); break;
-    case global.STATES.JUDGING: clear_center(); break;
+    case global.STATES.JUDGING: enterJudging(); break;
+    case global.STATES.INTERMISSION: winnerPicked(data[1]); break;
     default: break;
   }
 });
@@ -94,7 +95,6 @@ s.on('event', function (data) {
     case global.EVENTS.PLAY_CARDS: add_blank(); break;
     case global.EVENTS.SHOW_CARDS: add_whites(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
-    case global.EVENTS.PICK_WINNER: winnerPicked(data[1]); break;
     default: break;
   }
 });
@@ -142,6 +142,15 @@ function setJudge(username) {
   // place screen over hand if judge
   if (my_username == current_judge) {
     $('#judge_overlay').removeClass('hidden');
+  }
+}
+
+/*******************************************************************************
+* enters judging
+*/
+function enterJudging() {
+  clear_center();
+  if (my_username == current_judge) {
     $('#center').addClass('active');
   }
 }
