@@ -98,7 +98,6 @@ app.use(function(req, res){
 io.on('connection', function (socket) {
   log('INFO: ' + socket.handshake.address.address + ' connected');
   socket.join('login');
-  socket.emit('msg', 'please connect with your name');
   socket.on('req', function (data) {
     switch (data[0]) {
       case EVENTS.JOIN: add_player(socket, data[1]); break;
@@ -138,7 +137,7 @@ function add_player(socket, name) {
   // don't rebroadcast that the player is in the game
   // if they're just reconnecting
   if (!(name in players)) {
-    io.to('game').emit('event', [EVENTS.JOIN, name]);
+    io.to('game').emit('event', [EVENTS.JOIN, [name, 0]]);
   }
 
   // add player to list
@@ -147,13 +146,12 @@ function add_player(socket, name) {
 
   // send full client list to joining player
   for (p in players) {
-    socket.emit('event', [EVENTS.JOIN, p]);
+    socket.emit('event', [EVENTS.JOIN, [p, players[p].score]]);
   }
 
   // add user to the game room
   socket.leave('login');
   socket.join('game');
-  socket.emit('msg', 'you have joined the game, ' + name);
 
   // start the game if this makes enough players
   if (_.size(players) == 3) {
