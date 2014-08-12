@@ -241,12 +241,12 @@ function get_next_player(id) {
 */
 function get_game_state() {
   var curr_state = RoundMgr.getState();
-  var curr_whites = {};
+  var curr_whites;
   if(curr_state == STATES.JUDGING) {
     //if we are in judging mode, we should get the card ids
     curr_whites = RoundMgr.getWhites();
   } else {
-    curr_whites[CONSTANTS.SIZE_WHITES] = RoundMgr.getPlayed();
+    curr_whites = RoundMgr.getPlayed();
   }
   return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_whites);
 }
