@@ -1,10 +1,13 @@
 * { font-family: "Helvetica Neue", Arial, Helvetica, sans-serif; box-sizing: border-box; -moz-box-sizing: border-box; } 
 body, html { padding: 0; margin: 0; width: 100%; height: 100%; }
-h2 { margin-top: 0; }
+h2 { margin-top: 0; margin-bottom: 15px; }
 #container { position: relative; width: 100%; height: 100%; }
 
 .pane { position: absolute; top: 0; height: 100%; width: 25%; padding: 10px 15px; background: #eee; z-index: 20; }
+.subpane { position: absolute; top: 0; left: 0; width: 100%; height: 50%; padding: 10px 15px; }
 #left { left: 0%; box-shadow: 5px 5px 20px 0 #bbb; }
+#left_top { height: 34%; }
+#left_bottom { top: 34%; height: 66%; }
 #center { left: 25%; width: 50%; background: #ddd; z-index: 10; }
 #right { left: 75%; box-shadow: -5px 5px 20px 0 #bbb; }
 
@@ -20,12 +23,17 @@ h2 { margin-top: 0; }
 #black_extra { font-size: 50%; background: #555; padding: 3px 5px; white-space: nowrap; }
 .card.white { background: #fff; color: #111; border: 1px solid #aaa; }
 .cards { float: left; width: 50%; padding: 5px; }
-
 .card, .cards { transition: 0.1s; }
+
 #right.active .card.white:hover, #center.active .cards:hover .card {
 	background: #e55;
 	border-color: #c00;
 	cursor: pointer;
+}
+
+.highlighted .card, .card.highlighted {
+	background: #e55 !important;
+	border-color: #c00 !important;
 }
 
 .hidden { display: none; }
