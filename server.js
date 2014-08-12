@@ -1,14 +1,14 @@
 global.__base = __dirname + '/';
-global._ = require(__base + '/lib/underscore');
+global._ = require(__base + '/server/underscore');
 
 require(__base + '/shared/constants');
 
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var DeckManager = require(__base + '/lib/DeckManager');
-var RoundManager = require(__base + '/lib/RoundManager');
-var RoundState = require(__base + '/lib/RoundManager').RoundState;
+var DeckManager = require(__base + '/server/DeckManager');
+var RoundManager = require(__base + '/server/RoundManager');
+var RoundState = require(__base + '/server/RoundManager').RoundState;
 
 // game settings
 var servee_port = 8080;
@@ -59,15 +59,15 @@ function init() {
 * PUBLIC
 */
 app.get('/', function (req, res) {
-  res.sendFile(__base + '/public/index.html');
+  res.sendFile(__base + '/client/index.html');
 });
 
 app.get('/style.css', function (req, res) {
-  res.sendFile(__base + '/public/style.css');
+  res.sendFile(__base + '/client/style.css');
 });
 
 app.get('/socket.io.js', function (req, res) {
-  res.sendFile(__base + '/public/socket.io.js');
+  res.sendFile(__base + '/client/socket.io.js');
 });
 
 app.get('/constants.js', function (req, res) {
@@ -75,7 +75,7 @@ app.get('/constants.js', function (req, res) {
 });
 
 app.get('/client.js', function (req, res) {
-  res.sendFile(__base + '/public/client.js');
+  res.sendFile(__base + '/client/client.js');
 });
 
 app.get('/blacks.json', function (req, res) {
