@@ -15,3 +15,7 @@ global.EVENTS = {
 	PICK_WINNER: 5,
 	ANNOUNCE_JUDGE: 6
 }
+
+global.CONSTANTS = {
+	SIZE_WHITES: "size_whites"
+}

@@ -8,6 +8,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var DeckManager = require(__base + '/server/DeckManager');
 var RoundManager = require(__base + '/server/RoundManager');
+var Player = require(__base + '/server/Player');
 
 // game settings
 var server_port = 8080;
@@ -46,8 +47,8 @@ function log(text) {
 function init() {
   server.listen(server_port);
   log('STATE: INIT (setting up server)');
-  Deck = new DeckManager.DeckManager(blacks_default, whites_default);
-  RoundMgr = new RoundManager.RoundManager();
+  Deck = new DeckManager(blacks_default, whites_default);
+  RoundMgr = new RoundManager();
   players = {};
   socket_lookup = {};
   start_lobby();
@@ -141,8 +142,7 @@ function add_player(socket, name) {
   }
 
   // add player to list
-  players[name] = {ip: ip, name: name, score: 0, whites: [], waiting: true,
-    socket: socket.id};
+  players[name] = new Player(ip, name, 0, [], true, socket.id);
   socket_lookup[socket.id] = name;
 
   // send full client list to joining player
@@ -248,9 +248,21 @@ function get_game_state() {
     //if we are in judging mode, we should get the card ids
     curr_whites = RoundMgr.getWhites();
   } else {
-    curr_whites[CONSTANTS.SIZE_WHITES] = RoundManager.getPlayed();
+    curr_whites[CONSTANTS.SIZE_WHITES] = RoundMgr.getPlayed();
   }
-  return new Gamestate(curr_state, );
+  return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_whites);
+}
+
+/*******************************************************************************
+* return list of client player objects
+* PRIVATE
+*/
+function get_client_list() {
+  var clients = [];
+  for(p in players) {
+    clients.push(p.getClientPlayerObject());
+  }
+  return clients;
 }
 
 /*******************************************************************************
