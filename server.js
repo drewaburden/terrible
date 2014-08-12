@@ -11,7 +11,7 @@ var RoundManager = require(__base + '/server/RoundManager');
 
 // game settings
 var server_port = 8080;
-var draw_amount = 4;
+var draw_amount = 10;
 var intermission_time = 4000; // in ms
 
 /*******************************************************************************

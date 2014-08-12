@@ -12,14 +12,14 @@ h2 { margin-top: 0; margin-bottom: 15px; }
 #right { left: 75%; box-shadow: -5px 5px 20px 0 #bbb; }
 
 .card {
-	padding: 10px 15px;
+	padding: 5px 10px;
 	font-weight: bold;
-	font-size: 150%;
+	font-size: 125%;
 	min-height: 1em;
 	width: 100%;
 	margin-bottom: -1px;
 }
-.card.black { background: #111; color: #fff; border: 1px solid #333}
+.card.black { background: #111; color: #fff; border: 1px solid #333; padding: 10px 15px; font-size: 150%; }
 #black_extra { font-size: 50%; background: #555; padding: 3px 5px; white-space: nowrap; }
 .card.white { background: #fff; color: #111; border: 1px solid #aaa; }
 .cards { float: left; width: 50%; padding: 5px; }
