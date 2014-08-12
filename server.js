@@ -12,7 +12,7 @@ var RoundManager = require(__base + '/server/RoundManager');
 // game settings
 var server_port = 8080;
 var draw_amount = 4;
-var intermission_time = 1000; // in ms
+var intermission_time = 4000; // in ms
 
 /*******************************************************************************
 * various internals
@@ -134,16 +134,21 @@ function add_player(socket, name) {
     log('  ' + ip + ' joined as ' + name);
   }
 
-  // send current client list to joining player
-  for (p in players) {
-    socket.emit('event', [EVENTS.JOIN, p]);
+  // don't rebroadcast that the player is in the game
+  // if they're just reconnecting
+  if (!(name in players)) {
+    io.to('game').emit('event', [EVENTS.JOIN, name]);
   }
 
   // add player to list
   players[name] = {ip: ip, name: name, score: 0, whites: [], waiting: true,
     socket: socket.id};
   socket_lookup[socket.id] = name;
-  io.to('game').emit('event', [EVENTS.JOIN, name]);
+
+  // send full client list to joining player
+  for (p in players) {
+    socket.emit('event', [EVENTS.JOIN, p]);
+  }
 
   // add user to the game room
   socket.leave('login');

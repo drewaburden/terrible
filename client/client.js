@@ -88,13 +88,24 @@ s.on('state', function (data) {
 s.on('event', function (data) {
   log('player event: ' + data);
   switch(data[0]) {
+    case global.EVENTS.JOIN: addUser(data[1]); break;
     case global.EVENTS.DRAW_CARD: add_hand(data[1]); break;
     case global.EVENTS.PLAY_CARDS: add_blank(); break;
     case global.EVENTS.SHOW_CARDS: add_whites(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
+    case global.EVENTS.PICK_WINNER: winnerPicked(data[1]); break;
     default: break;
   }
 });
+
+/*******************************************************************************
+* adds user to scoreboard
+*/
+function addUser(user) {
+  var html = '<div class="card white" user="' + user + '">' + user;
+  html += '</div>';
+  $('#scores').append(html);
+}
 
 /*******************************************************************************
 * set the current black card
@@ -114,6 +125,7 @@ function roundInit(black) {
   $('#judge_overlay').addClass('hidden');
   $('#center').removeClass('active');
   $('#right').addClass('active');
+  $('.highlighted').removeClass('highlighted');
   clear_center();
   update_black(black);
   played = false;
@@ -181,12 +193,20 @@ function add_blank() {
 * adds judgeable whites to the center
 */
 function add_whites(user, cards) {
-  var html = '<div class="cards" onclick="pick(\'' + user + '\')">';
+  var html = '<div class="cards" user="' + user + '" onclick="pick(\'' + user;
+  html += '\')">';
   for (var i = 0; i < cards.length; i++) {
     html += '<div class="card white">' + whites[cards[i]] + '</div>';
   }
   html += '</div>';
   $('#center').append(html);
+}
+
+/*******************************************************************************
+* winner was picked, highlight them
+*/
+function winnerPicked(user) {
+  $("[user='" + user + "']").addClass('highlighted');
 }
 
 

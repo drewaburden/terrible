@@ -4,10 +4,10 @@ h2 { margin-top: 0; margin-bottom: 15px; }
 #container { position: relative; width: 100%; height: 100%; }
 
 .pane { position: absolute; top: 0; height: 100%; width: 25%; padding: 10px 15px; background: #eee; z-index: 20; }
-.subpane { position: absolute; top: 0; left: 0; width: 100%; height: 50%; padding: 10px 15px; }
+.subpane { position: absolute; left: 0; width: 100%; padding: 10px 15px; }
 #left { left: 0%; box-shadow: 5px 5px 20px 0 #bbb; }
-#left_top { height: 34%; }
-#left_bottom { top: 34%; height: 66%; }
+#left_top { top: 0; }
+#left_bottom { bottom: 0; }
 #center { left: 25%; width: 50%; background: #ddd; z-index: 10; }
 #right { left: 75%; box-shadow: -5px 5px 20px 0 #bbb; }
 
