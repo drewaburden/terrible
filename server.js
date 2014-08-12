@@ -215,7 +215,7 @@ function remove_player(socket) {
     // remove the user's cards from play otherwise
     else {
       RoundMgr.deleteWhitesById(id);
-      RoundMgr.setPlayers(RoundMgr.getPlayers()--);
+      RoundMgr.setPlayers(RoundMgr.getPlayers() - 1);
     }
   }
 }
