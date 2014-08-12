@@ -14,7 +14,7 @@ RoundManager.prototype.getState = function() {
 	return this.round_state;
 }
 
-RoundManager.prototype.changeState = function(state) {
+RoundManager.prototype.setState = function(state) {
 	this.round_state = state;
 	if(state = STATES.PLAYING) {
 		this.played = 0;

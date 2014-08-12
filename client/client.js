@@ -101,7 +101,9 @@ s.on('event', function (data) {
 /*******************************************************************************
 * adds user to scoreboard
 */
-function addUser(user) {
+function addUser(data) {
+  var user = data[0];
+  var score = data[1];
   var html = '<div class="card white" user="' + user + '">' + user;
   html += '</div>';
   $('#scores').append(html);
@@ -135,10 +137,7 @@ function roundInit(black) {
 * set the current judge
 */
 function setJudge(username) {
-  log('hi');
-  log(username);
   current_judge = username;
-  log(current_judge)
   // place screen over hand if judge
   if (my_username == current_judge) {
     $('#judge_overlay').removeClass('hidden');
