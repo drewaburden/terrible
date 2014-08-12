@@ -17,5 +17,5 @@ global.EVENTS = {
 }
 
 global.CONSTANTS = {
-	SIZE_WHITES: "size_whites"
+
 }
