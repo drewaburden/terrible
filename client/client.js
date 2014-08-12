@@ -126,8 +126,8 @@ function update_black(id) {
 
 function roundInit(black) {
   $('#judge_overlay').addClass('hidden');
-  $('#center').removeClass('active');
-  $('#right').addClass('active');
+  $('#played_whites').removeClass('active');
+  $('#hand').addClass('active');
   $('.highlighted').removeClass('highlighted');
   clear_center();
   update_black(black);
@@ -151,7 +151,7 @@ function setJudge(username) {
 function enterJudging() {
   clear_center();
   if (my_username == current_judge) {
-    $('#center').addClass('active');
+    $('#played_whites').addClass('active');
   }
 }
 
@@ -161,7 +161,7 @@ function enterJudging() {
 function add_hand(id) {
   var html = '<div class="card white" onclick="prepare_to_play($(this))" ';
   html += 'white_id="' + id + '">' + whites[id] + '</div>';
-  $('#right').append(html);
+  $('#hand').append(html);
 }
 
 /*******************************************************************************
@@ -178,7 +178,7 @@ function prepare_to_play(card_element) {
   if (play_cards.length == extra + 1) {
     play(play_cards);
     play_cards = [];
-    $('#right').removeClass('active');
+    $('#hand').removeClass('active');
     played = true;
   }
 }
@@ -187,14 +187,14 @@ function prepare_to_play(card_element) {
 * clears the center pane
 */
 function clear_center() {
-  $('#center').empty();
+  $('#played_whites').empty();
 }
 
 /*******************************************************************************
 * adds a blank card to the center
 */
 function add_blank() {
-  $('#center').append('<div class="cards"><div class="card white">&nbsp;</div></div>');
+  $('#played_whites').append('<div class="cards"><div class="card white">&nbsp;</div></div>');
 }
 
 /*******************************************************************************
@@ -207,14 +207,14 @@ function add_whites(user, cards) {
     html += '<div class="card white">' + whites[cards[i]] + '</div>';
   }
   html += '</div>';
-  $('#center').append(html);
+  $('#played_whites').append(html);
 }
 
 /*******************************************************************************
 * winner was picked, highlight them
 */
 function winnerPicked(user) {
-  var winning_cards = $("#center [user='" + user + "']").addClass('highlighted');
+  var winning_cards = $("#played_whites [user='" + user + "']").addClass('highlighted');
   var user_tile = $("#scores [user='" + user + "']");
   user_tile.addClass('highlighted');
   user_tile.attr('score', parseInt(user_tile.attr('score')) + 1);

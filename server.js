@@ -106,6 +106,12 @@ function start_lobby() {
 * BROADCASTS
 */
 function add_player(socket, name) {
+  // TODO: allow rejoining
+  // for now, don't allow any "duplicate" names
+  if (name in players) {
+    return
+  }
+
   var ip = socket.handshake.address.address;
   if (debug) {
     log('  ' + ip + ' joined as ' + name);
