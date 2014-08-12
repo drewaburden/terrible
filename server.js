@@ -108,6 +108,9 @@ io.on('connection', function (socket) {
         break;
     }
   });
+  socket.on('disconnect', function () {
+    remove_player(socket);
+  });
 });
 
 /*******************************************************************************
@@ -170,6 +173,10 @@ function add_player(socket, name) {
 */
 function remove_player(socket) {
   var id = socket_lookup[socket.id];
+  // if they haven't joined the game yet, don't do anything
+  if (id == undefined) {
+    return;
+  }
   if (debug) {
     log('  player ' + id + ' removed');
   }
@@ -196,7 +203,8 @@ function remove_player(socket) {
     }
   }
   // handle some cases if a round is going
-  else if (RoundMgr.getState() == STATES.PLAYING) {
+  else if (RoundMgr.getState() == STATES.PLAYING
+    || RoundMgr.getState() == STATES.JUDGING) {
     // the judge quit, start a new round
     if (RoundMgr.getJudge() == id) {
       setTimeout(start_round, state_switch_time);

@@ -55,11 +55,11 @@ function pick(user) {
   s.emit("req", [global.EVENTS.PICK_WINNER, user]);
 }
 
-function quit() {
+/*function quit() {
   s.emit("req", [global.EVENTS.QUIT]);
   $('#overlay_join').removeClass('hidden');
   $('#overlay').removeClass('hidden');
-}
+}*/
 
 /*******************************************************************************
 * message handling
@@ -89,6 +89,7 @@ s.on('event', function (data) {
   log('player event: ' + data);
   switch(data[0]) {
     case global.EVENTS.JOIN: addUser(data[1]); break;
+    case global.EVENTS.QUIT: $("[user='" + data[1] + "']").remove(); break;
     case global.EVENTS.DRAW_CARD: add_hand(data[1]); break;
     case global.EVENTS.PLAY_CARDS: add_blank(); break;
     case global.EVENTS.SHOW_CARDS: add_whites(data[1], data[2]); break;
