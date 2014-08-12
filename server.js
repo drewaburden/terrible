@@ -8,6 +8,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var DeckManager = require(__base + '/server/DeckManager');
 var RoundManager = require(__base + '/server/RoundManager');
+var RoundState = require(__base + '/server/RoundManager').RoundState;
 
 // game settings
 var server_port = 8080;
@@ -238,22 +239,6 @@ function get_next_player(id) {
 }
 
 /*******************************************************************************
-* creates a gamestate and returns it
-* PRIVATE
-*/
-function get_game_state() {
-  var curr_state = RoundMgr.getState();
-  var curr_whites = {};
-  if(curr_state == STATES.JUDGING) {
-    //if we are in judging mode, we should get the card ids
-    curr_whites = RoundMgr.getWhites();
-  } else {
-    curr_whites[CONSTANTS.SIZE_WHITES] = RoundManager.getPlayed();
-  }
-  return new Gamestate(curr_state, );
-}
-
-/*******************************************************************************
 * begins a round
 * PRIVATE
 * BROADCASTS
@@ -263,8 +248,8 @@ function start_round() {
   RoundMgr.setPlayers(_.size(players) - 1);
 
   // pick random question and set up extra draws
-  RoundMgr.setBlack(Deck.getBlackCard()); //Should be done in RoundManager
-  RoundMgr.setExtraWhites(RoundMgr.getBlack()[1]); //Should be done in RoundManager
+  RoundMgr.setBlack(Deck.getBlackCard());
+  RoundMgr.setExtraWhites(RoundMgr.getBlack()[1]);
 
   if (debug) {
     log('STATE: PLAYING (a new round has started; dealing cards)');
@@ -275,11 +260,11 @@ function start_round() {
   }
 
   // decide who is judging
-  RoundMgr.setJudge(get_next_player(RoundMgr.getJudge())); //Should be done in RoundManager
+  RoundMgr.setJudge(get_next_player(RoundMgr.getJudge()));
   log('  ' + RoundMgr.getJudge() + ' is judging, does not get any supranormal whites');
 
   // draw enough cards for round
-  RoundMgr.resetWhites(); //Should be done in RoundManager
+  RoundMgr.resetWhites();
   for (p in players) {
     players[p]['waiting'] = false; // set all new joiners active
     var missing = draw_amount - players[p]['whites'].length;

@@ -7,19 +7,14 @@ function RoundManager() {
 	this.round_whites = {};
 	this.round_extra_whites = {};
 	this.round_players = 0; // number of users that will play white cards
-	this.round_played = 0; // number of users who have played this round
 }
 
 RoundManager.prototype.getState = function() {
 	return this.round_state;
 }
 
-RoundManager.prototype.changeState = function(state) {
+RoundManager.prototype.setState = function(state) {
 	this.round_state = state;
-	if(state = STATES.PLAYING) {
-		this.played = 0;
-		this.resetWhites();
-	}
 }
 
 RoundManager.prototype.getJudge = function() {
@@ -62,21 +57,8 @@ RoundManager.prototype.setPlayers = function(players) {
 	this.round_players = players;
 }
 
-RoundManager.prototype.setPlayed = function(played) {
-	this.round_played = played;
-}
-
-RoundManager.prototype.getPlayed = function () {
-	return this.round_played;
-}
-
 RoundManager.prototype.newPlayer = function() {
 	++this.round_players;
-}
-
-RoundManager.prototype.playWhitesById = function(id, whites) {
-	++this.round_played;
-	this.round_whites[id] = whites;
 }
 
 RoundManager.prototype.deleteWhitesById = function(id) {
