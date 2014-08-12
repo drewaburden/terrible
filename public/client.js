@@ -1,21 +1,5 @@
 var s = io('/');
 
-// game states
-var s_init = -1;
-var s_lobby = 0
-var s_playing = 1
-var s_judging = 2
-var s_intermission = 3
-
-// event types
-var e_join = 0;
-var e_quit = 1;
-var e_draw = 2;
-var e_play = 3;
-var e_show = 4;
-var e_pick = 5;
-var e_judg = 6;
-
 var blacks, whites;
 
 function log(text) {
@@ -46,7 +30,7 @@ function load() {
 * here we start the game
 */
 function init() {
-  state = s_init;
+  state = global.STATES.INIT;
 }
 
 /*******************************************************************************
@@ -58,21 +42,21 @@ function request(payload) {
 
 function join(username) {
   my_username = username;
-  s.emit("req", [e_join, username]);
+  s.emit("req", [global.EVENTS.JOIN, username]);
   $('#overlay').addClass('hidden');
   $('#overlay_join').addClass('hidden');
 }
 
 function play(cards) {
-  s.emit("req", [e_play, cards]);
+  s.emit("req", [global.EVENTS.PLAY_CARDS, cards]);
 }
 
 function pick(user) {
-  s.emit("req", [e_pick, user]);
+  s.emit("req", [global.EVENTS.PICK_WINNER, user]);
 }
 
 function quit() {
-  s.emit("req", [e_quit]);
+  s.emit("req", [global.EVENTS.QUIT]);
   $('#overlay_join').removeClass('hidden');
   $('#overlay').removeClass('hidden');
 }
@@ -91,9 +75,9 @@ s.on('state', function (data) {
   log('new game state: ' + data);
   state = data[0];
   switch(state) {
-    case s_lobby: $('#black_text').text('Waiting for players...'); break;
-    case s_playing: roundInit(data[1]); break;
-    case s_judging: clear_center(); break;
+    case global.STATES.LOBBY: $('#black_text').text('Waiting for players...'); break;
+    case global.STATES.PLAYING: roundInit(data[1]); break;
+    case global.STATES.JUDGING: clear_center(); break;
     default: break;
   }
 });
@@ -104,10 +88,10 @@ s.on('state', function (data) {
 s.on('event', function (data) {
   log('player event: ' + data);
   switch(data[0]) {
-    case e_draw: add_hand(data[1]); break;
-    case e_play: add_blank(); break;
-    case e_show: add_whites(data[1], data[2]); break;
-    case e_judg: setJudge(data[1]); break;
+    case global.EVENTS.DRAW_CARD: add_hand(data[1]); break;
+    case global.EVENTS.PLAY_CARDS: add_blank(); break;
+    case global.EVENTS.SHOW_CARDS: add_whites(data[1], data[2]); break;
+    case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
     default: break;
   }
 });
@@ -163,7 +147,8 @@ function add_hand(id) {
 * staging for playing a set of cards
 */
 function prepare_to_play(card_element) {
-  if (state != s_playing || current_judge == my_username || played) {
+  if (state != global.STATES.PLAYING || current_judge == my_username
+    || played) {
     return;
   }
   var id = parseInt(card_element.attr('white_id'));

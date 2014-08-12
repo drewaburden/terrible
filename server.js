@@ -23,22 +23,6 @@ var debug = true;
 var state_switch_time = 100; // in ms
 var test_switch_time = 50; // in ms
 
-// game states
-var s_init = -1;
-var s_lobby = 0
-var s_playing = 1
-var s_judging = 2
-var s_intermission = 3
-
-// event types
-var e_join = 0;
-var e_quit = 1;
-var e_draw = 2;
-var e_play = 3;
-var e_show = 4;
-var e_pick = 5;
-var e_judg = 6;
-
 // cards are referenced by simple numerical index
 blacks_default = require(__base + '/shared/blacks.json');
 whites_default = require(__base + '/shared/whites.json');
@@ -86,6 +70,10 @@ app.get('/socket.io.js', function (req, res) {
   res.sendFile(__base + '/public/socket.io.js');
 });
 
+app.get('/constants.js', function (req, res) {
+  res.sendFile(__base + '/shared/constants.js');
+});
+
 app.get('/client.js', function (req, res) {
   res.sendFile(__base + '/public/client.js');
 });
@@ -113,10 +101,12 @@ io.on('connection', function (socket) {
   socket.emit('msg', 'please connect with your name');
   socket.on('req', function (data) {
     switch (data[0]) {
-      case e_join: add_player(socket, data[1]); break;
-      case e_quit: remove_player(socket); break;
-      case e_play: play_whites(socket_lookup[socket.id], data[1]); break;
-      case e_pick: pick_winner(socket_lookup[socket.id], data[1]); break;
+      case EVENTS.JOIN: add_player(socket, data[1]); break;
+      case EVENTS.QUIT: remove_player(socket); break;
+      case EVENTS.PLAY_CARDS: play_whites(socket_lookup[socket.id], data[1]);
+        break;
+      case EVENTS.PICK_WINNER: pick_winner(socket_lookup[socket.id], data[1]);
+        break;
     }
   });
 });
@@ -147,14 +137,14 @@ function add_player(socket, name) {
 
   // send current client list to joining player
   for (p in players) {
-    socket.emit('event', [e_join, p]);
+    socket.emit('event', [EVENTS.JOIN, p]);
   }
 
   // add player to list
   players[name] = {ip: ip, name: name, score: 0, whites: [], waiting: true,
     socket: socket.id};
   socket_lookup[socket.id] = name;
-  io.to('game').emit('event', [e_join, name]);
+  io.to('game').emit('event', [EVENTS.JOIN, name]);
 
   // add user to the game room
   socket.leave('login');
@@ -184,7 +174,7 @@ function remove_player(socket) {
   var waiting = players[id]['waiting']
   delete players[id];
   delete socket_lookup[socket.id];
-  io.to('game').emit('event', [e_quit, id]);
+  io.to('game').emit('event', [EVENTS.QUIT, id]);
   
   // not enough players for the round
   if (RoundMgr.getPlayers() == 2 && !waiting) {
@@ -283,7 +273,7 @@ function start_round() {
     }
   }
   io.to('game').emit('state', [RoundMgr.getState(), RoundMgr.getBlack()[0]]);
-  io.to('game').emit('event', [e_judg, RoundMgr.getJudge()]);
+  io.to('game').emit('event', [EVENTS.ANNOUNCE_JUDGE, RoundMgr.getJudge()]);
 }
 
 /*******************************************************************************
@@ -297,7 +287,7 @@ function draw_white(p_id) {
     log('    player ' + p_id + ' receives card ' + white);
   }
   players[p_id]['whites'].push(white);
-  io.to(players[p_id]['socket']).emit('event', [e_draw, white]);
+  io.to(players[p_id]['socket']).emit('event', [EVENTS.DRAW_CARD, white]);
 }
 
 /*******************************************************************************
@@ -306,7 +296,7 @@ function draw_white(p_id) {
 * BROADCASTS
 */
 function play_whites(p_id, whites) {
-  if (RoundMgr.getState() != s_playing) {
+  if (RoundMgr.getState() != STATES.PLAYING) {
     log('WARNING: round not in play; cannot play cards now');
     return false;
   } else if (p_id == RoundMgr.getJudge()) {
@@ -335,7 +325,7 @@ function play_whites(p_id, whites) {
   if (_.size(RoundMgr.getWhites()) == RoundMgr.getPlayers()) {
     setTimeout(start_judging, state_switch_time);
   }
-  io.to('game').emit('event', [e_play, p_id]);
+  io.to('game').emit('event', [EVENTS.PLAY_CARDS, p_id]);
   return true;
 }
 
@@ -349,7 +339,8 @@ function start_judging() {
   io.to('game').emit('state', [RoundMgr.getState()]);
   // reveal cards to everyone
   for (p_id in RoundMgr.getWhites()) {
-    io.to('game').emit('event', [e_show, p_id, RoundMgr.getWhites()[p_id]]);
+    io.to('game').emit('event', [EVENTS.SHOW_CARDS, p_id,
+      RoundMgr.getWhites()[p_id]]);
   }
   if (debug) {
     log('STATE: JUDGING (all users have played, judging begins)');
@@ -362,7 +353,7 @@ function start_judging() {
 * BROADCASTS
 */
 function pick_winner(p_id, winner) {
-  if (RoundMgr.getState() != s_judging) {
+  if (RoundMgr.getState() != STATES.JUDGING) {
     log('WARNING: not everyone has played; cannot judge now');
     return false;
   } else if (p_id != RoundMgr.getJudge()) {
@@ -375,7 +366,7 @@ function pick_winner(p_id, winner) {
     log('WARNING: winner ' + winner + ' not in game');
     return false;
   }
-  io.to('game').emit('event', [e_pick, winner]);
+  io.to('game').emit('event', [EVENTS.PICK_WINNER, winner]);
   players[winner]['score']++;
   if (debug) {
     log_msg = '  player ' + winner + ' was picked as winner, they have ';
