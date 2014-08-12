@@ -11,7 +11,7 @@ var RoundManager = require(__base + '/server/RoundManager');
 var RoundState = require(__base + '/server/RoundManager').RoundState;
 
 // game settings
-var servee_port = 8080;
+var server_port = 8080;
 var draw_amount = 4;
 var intermission_time = 1000; // in ms
 
@@ -45,7 +45,7 @@ function log(text) {
 * PRIVATE
 */
 function init() {
-  server.listen(servee_port);
+  server.listen(server_port);
   log('STATE: INIT (setting up server)');
   Deck = new DeckManager.DeckManager(blacks_default, whites_default);
   RoundMgr = new RoundManager.RoundManager();
