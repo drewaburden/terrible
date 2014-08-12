@@ -344,7 +344,7 @@ function play_whites(p_id, whites) {
   }
   // TODO: need to prevent a user from playing the same card multiple times
   
-  RoundMgr.getWhites()[p_id] = whites;
+  RoundMgr.playWhitesById(p_id, whites);
   // remove cards from player's hand
   for (w in whites) {
     players[p_id]['whites'] = _.without(players[p_id]['whites'], whites[w]);

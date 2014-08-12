@@ -16,7 +16,7 @@ RoundManager.prototype.getState = function() {
 
 RoundManager.prototype.setState = function(state) {
 	this.round_state = state;
-	if(state = STATES.PLAYING) {
+	if(state == STATES.PLAYING) {
 		this.played = 0;
 		this.resetWhites();
 	}
