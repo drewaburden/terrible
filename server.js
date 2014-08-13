@@ -30,7 +30,6 @@ whites_default = require(__base + '/shared/whites.json');
 var Deck;
 
 // because players can leave during the game, they are referenced by id
-var waiting;
 var players;
 var socket_lookup;
 
@@ -124,7 +123,7 @@ function addPlayer(socket, name) {
   }
 
   // add player to list
-  players[name] = new Player(ip, name, 0, [], true, socket.id);
+  players[name] = new Player(ip, name, 0, [], socket.id);
   socket_lookup[socket.id] = name;
 
   // send full client list to joining player
@@ -160,7 +159,6 @@ function removePlayer(socket) {
   if (debug) {
     log('  player ' + id + ' removed');
   }
-  var waiting = players[id]['waiting']
   delete players[id];
   delete socket_lookup[socket.id];
   io.to('game').emit('event', [EVENTS.QUIT, id]);
@@ -228,7 +226,6 @@ function startRound() {
 
   // draw enough cards for round
   for (p in players) {
-    players[p]['waiting'] = false; // set all new joiners active
     if (RoundMgr.getJudge() != p) {
       drawWhites(p, draw_amount + RoundMgr.getBlackExtra() - players[p]['whites'].length);
     }

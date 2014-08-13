@@ -1,9 +1,8 @@
-function Player(ip, name, score, whites, waiting, socket) {
+function Player(ip, name, score, whites, socket) {
 	this.ip = ip;
 	this.name = name;
 	this.score = score;
 	this.whites = whites;
-	this.waiting = waiting;
 	this.socket = socket;
 }
 
