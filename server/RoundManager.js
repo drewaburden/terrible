@@ -18,17 +18,13 @@ RoundManager.prototype.getState = function() {
 RoundManager.prototype.setState = function(state, data) {
 	this.round_state = state;
 	if(state == STATES.PLAYING) {
-		this.setRoundPlayers(data[0]);
+		this.setPlayers(data[0]);
 		this.setBlackCard(data[1]);
 		this.resetWhites();
 	}
 }
 
-RoundManager.prototype.getPlayers = function() {
-	return this.round_responders;
-}
-
-RoundManager.prototype.setRoundPlayers = function(players) {
+RoundManager.prototype.setPlayers = function(players) {
 	this.round_players = players;
 	// determines the next judge in order
 	this.round_judge = this.round_players[(_.indexOf(this.round_players,
@@ -79,21 +75,12 @@ RoundManager.prototype.playWhitesById = function(id, whites) {
 	}
 }
 
-RoundManager.prototype.deleteWhitesById = function(id) {
-	delete this.round_whites[id];
-	this.round_responded--;
-}
-
 RoundManager.prototype.resetWhites = function() {
 	this.round_whites = {};
 }
 
 RoundManager.prototype.getJudge = function() {
 	return this.round_judge;
-}
-
-RoundManager.prototype.setJudge = function(judge) {
-	this.round_judge = judge;
 }
 
 RoundManager.prototype.getBlackId = function() {
@@ -109,6 +96,7 @@ RoundManager.prototype.setBlackCard = function(black) {
 	this.round_black_extra = black[1];
 }
 
+// used by gamestate
 RoundManager.prototype.getWhites = function() {
 	return this.round_whites;
 }
