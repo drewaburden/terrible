@@ -1,67 +1,67 @@
 module.exports = DeckManager;
-function DeckManager(blacks, whites) {
-	this.blacks = blacks;
-	this.whites = whites;
-	this.whites_draw = this.createWhitesDraw();
-	this.blacks_draw = this.createBlacksDraw();
+function DeckManager(prompts, responses) {
+	this.prompts = prompts;
+	this.responses = responses;
+	this.responses_draw = this.createResponsesDraw();
+	this.prompts_draw = this.createPromptsDraw();
 }
 
-// Get x number of cards from whites_draw array
-DeckManager.prototype.getWhiteCards = function(x) {
+// Get x number of cards from responses_draw array
+DeckManager.prototype.getResponseCards = function(x) {
 	var cards = [];
 	for(var i = 0; i < x; i++) {
-		cards.push(this.getWhiteCard());
+		cards.push(this.getResponseCard());
 	}
 	return cards;
 }
 
-//pops one white card from the array and returns it
-DeckManager.prototype.getWhiteCard = function() {
-	var card = this.whites_draw.pop();
+//pops one response card from the array and returns it
+DeckManager.prototype.getResponseCard = function() {
+	var card = this.responses_draw.pop();
 	if(card == undefined) {
-		this.reloadWhitesDrawDeck();
-		card = this.whites_draw.pop();
+		this.reloadResponsesDrawDeck();
+		card = this.responses_draw.pop();
 	}
 	return card;
 }
 
-//pops one black card from the array and returns it
-DeckManager.prototype.getBlackCard = function() {
-	var card = this.blacks_draw.pop();
+//pops one prompt card from the array and returns it
+DeckManager.prototype.getPromptCard = function() {
+	var card = this.prompts_draw.pop();
 	if(card == undefined) {
-		this.reloadBlacksDrawDeck();
-		card = this.blacks_draw.pop();
+		this.reloadPromptsDrawDeck();
+		card = this.prompts_draw.pop();
 	}
-	var extra = this.blacks[card][1]; // number of extra cards to draw
+	var extra = this.prompts[card][1]; // number of extra cards to draw
 	return [card, extra];
 }
 
-//reloads the whites_draw deck from the base white decks
-DeckManager.prototype.reloadWhitesDrawDeck = function() {
-	this.whites_draw = this.createBlacksDraw();
+//reloads the responses_draw deck from the base response decks
+DeckManager.prototype.reloadResponsesDrawDeck = function() {
+	this.responses_draw = this.createPromptsDraw();
 }
 
-//reloads the blacs_draw deck from the base black decks
-DeckManager.prototype.reloadBlacksDrawDeck = function() {
-	this.blacks_draw = this.createBlacksDraw();
+//reloads the prompts_draw deck from the base prompt decks
+DeckManager.prototype.reloadPromptsDrawDeck = function() {
+	this.prompts_draw = this.createPromptsDraw();
 }
 
-//sets a new blacks array
-DeckManager.prototype.setBlacks = function(blacks) {
-	this.blacks = blacks;
+//sets a new prompts array
+DeckManager.prototype.setPrompts = function(prompts) {
+	this.prompts = prompts;
 }
 
-//sets a new whites array
-DeckManager.prototype.setWhites = function(whites) {
-	this.whites = whites;
+//sets a new responses array
+DeckManager.prototype.setResponses = function(responses) {
+	this.responses = responses;
 }
 
-//creates a shuffled array of all white card IDs
-DeckManager.prototype.createWhitesDraw = function() {
-	return _.shuffle(_.range(this.whites.length));
+//creates a shuffled array of all response card IDs
+DeckManager.prototype.createResponsesDraw = function() {
+	return _.shuffle(_.range(this.responses.length));
 }
 
-//creates a shuffled array of all black card IDs
-DeckManager.prototype.createBlacksDraw = function() {
-	return _.shuffle(_.range(this.blacks.length));
+//creates a shuffled array of all prompt card IDs
+DeckManager.prototype.createPromptsDraw = function() {
+	return _.shuffle(_.range(this.prompts.length));
 }

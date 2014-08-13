@@ -1,6 +1,6 @@
 var s = io('/');
 
-var blacks, whites;
+var prompts, responses;
 
 function log(text) {
   console.log(text);
@@ -18,9 +18,9 @@ var played;
 */
 function load() {
   $.getJSON("prompts.json", function (data) {
-    blacks = data;
+    prompts = data;
     $.getJSON("responses.json", function (data) {
-      whites = data;
+      responses = data;
       init();
     });
   });
@@ -92,16 +92,16 @@ function stateLobby() {
 }
 
 /*******************************************************************************
-* the round has started, set the black card
+* the round has started, set the prompt card
 */
-function statePlaying(black_id) {
+function statePlaying(prompt_id) {
   resetVisualState();
   $('#hand').addClass('active');
   played = false; 
 
-  // set the black card
-  $('#black_text').text(blacks[black_id][0]);
-  extra = blacks[black_id][1];
+  // set the prompt card
+  $('#black_text').text(prompts[prompt_id][0]);
+  extra = prompts[prompt_id][1];
   if (extra > 0) {
     $('#black_extra').text('play ' + (extra + 1));
     $('#black_extra').removeClass('hidden');
@@ -141,7 +141,7 @@ s.on('event', function (data) {
     case global.EVENTS.QUIT: $("[user='" + data[1] + "']").remove(); break;
     case global.EVENTS.SYNC_HAND: syncHand(data[1]); break;
     case global.EVENTS.PLAY_CARDS: add_blank(); break;
-    case global.EVENTS.SHOW_CARDS: add_whites(data[1], data[2]); break;
+    case global.EVENTS.SHOW_CARDS: add_responses(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
     default: break;
   }
@@ -190,7 +190,7 @@ function syncHand(hand) {
   var html = '';
   for (var i = 0; i < hand.length; i++) {
     html += '<div class="card white" onclick="prepare_to_play($(this))" ';
-    html += 'white_id="' + hand[i] + '">' + whites[hand[i]] + '</div>';
+    html += 'white_id="' + hand[i] + '">' + responses[hand[i]] + '</div>';
   }
   $('#hand').html(html);
 }
@@ -230,13 +230,13 @@ function add_blank() {
 }
 
 /*******************************************************************************
-* adds judgeable whites to the center
+* adds judgeable responses to the center
 */
-function add_whites(user, cards) {
+function add_responses(user, cards) {
   var html = '<div class="cards" user="' + user + '" onclick="pick(\'' + user;
   html += '\')">';
   for (var i = 0; i < cards.length; i++) {
-    html += '<div class="card white">' + whites[cards[i]] + '</div>';
+    html += '<div class="card white">' + responses[cards[i]] + '</div>';
   }
   html += '</div>';
   $('#played_whites').append(html);

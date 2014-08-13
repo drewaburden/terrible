@@ -4,11 +4,11 @@ function RoundManager() {
 	this.round_state = STATES.INIT;
 	this.round_players = []; // all users in the round
 	this.round_judge = -1;
-	this.round_responders = -1; // number of users that will play white cards
+	this.round_responders = -1; // number of users that will play response cards
 	this.round_responded = -1; // number of users that have done so
-	this.round_black_id = -1;
-	this.round_black_extra = -1;
-	this.round_whites = {};
+	this.round_prompt_id = -1;
+	this.round_prompt_extra = -1;
+	this.round_responses = {};
 }
 
 RoundManager.prototype.getState = function() {
@@ -19,21 +19,21 @@ RoundManager.prototype.setState = function(state, data) {
 	this.round_state = state;
 	if(state == STATES.PLAYING) {
 		this.setPlayers(data[0]);
-		this.setBlackCard(data[1]);
-		this.resetWhites();
+		this.setPromptCard(data[1]);
+		this.resetResponses();
 	}
 }
 
 // starts a new round
 // returns true if the game state was changed 
-RoundManager.prototype.newRound = function(players, black) {
+RoundManager.prototype.newRound = function(players, prompt) {
 	if (players.length < 3) {
 		return false;
 	}
 	this.round_state = STATES.PLAYING;
 	this.setPlayers(players);
-	this.setBlackCard(black);
-	this.resetWhites();
+	this.setPromptCard(prompt);
+	this.resetResponses();
 	return true;
 }
 
@@ -71,8 +71,8 @@ RoundManager.prototype.removePlayer = function(id) {
 	else {
 		this.round_responders--;
 		// delete their cards if they played
-		if (id in this.round_whites) {
-			delete this.round_whites[id];
+		if (id in this.round_responses) {
+			delete this.round_responses[id];
 			this.round_responded--;
 		}
 		// return to lobby if not enough responders
@@ -86,8 +86,8 @@ RoundManager.prototype.removePlayer = function(id) {
 
 // plays a user's cards
 // returns true if the game state was changed 
-RoundManager.prototype.playWhitesById = function(id, whites) {
-	this.round_whites[id] = whites;
+RoundManager.prototype.playResponsesById = function(id, responses) {
+	this.round_responses[id] = responses;
 	this.round_responded++;
 	if (this.round_responded == this.round_responders) {
 		this.setState(STATES.JUDGING);
@@ -96,29 +96,29 @@ RoundManager.prototype.playWhitesById = function(id, whites) {
 	return false;
 }
 
-RoundManager.prototype.resetWhites = function() {
-	this.round_whites = {};
+RoundManager.prototype.resetResponses = function() {
+	this.round_responses = {};
 }
 
 RoundManager.prototype.getJudge = function() {
 	return this.round_judge;
 }
 
-RoundManager.prototype.getBlackId = function() {
-	return this.round_black_id;
+RoundManager.prototype.getPromptId = function() {
+	return this.round_prompt_id;
 }
 
-RoundManager.prototype.getBlackExtra = function() {
-	return this.round_black_extra;
+RoundManager.prototype.getPromptExtra = function() {
+	return this.round_prompt_extra;
 }
 
-RoundManager.prototype.setBlackCard = function(black) {
-	this.round_black_id = black[0];
-	this.round_black_extra = black[1];
+RoundManager.prototype.setPromptCard = function(prompt) {
+	this.round_prompt_id = prompt[0];
+	this.round_prompt_extra = prompt[1];
 }
 
-RoundManager.prototype.getWhites = function() {
-	return this.round_whites;
+RoundManager.prototype.getResponses = function() {
+	return this.round_responses;
 }
 
 

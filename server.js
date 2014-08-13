@@ -25,8 +25,8 @@ var state_switch_time = 0; // in ms
 var test_switch_time = 50; // in ms
 
 // cards are referenced by simple numerical index
-blacks_default = require(__base + '/shared/prompts.json');
-whites_default = require(__base + '/shared/responses.json');
+prompts_default = require(__base + '/shared/prompts.json');
+responses_default = require(__base + '/shared/responses.json');
 var Deck;
 
 // because players can leave during the game, they are referenced by id
@@ -47,7 +47,7 @@ function log(text) {
 function init() {
   server.listen(server_port);
   log('STATE: INIT (setting up server)');
-  Deck = new DeckManager(blacks_default, whites_default);
+  Deck = new DeckManager(prompts_default, responses_default);
   RoundMgr = new RoundManager();
   players = {};
   socket_lookup = {};
@@ -75,7 +75,7 @@ io.on('connection', function (socket) {
     switch (data[0]) {
       case EVENTS.JOIN: addPlayer(socket, data[1]); break;
       case EVENTS.QUIT: removePlayer(socket); break;
-      case EVENTS.PLAY_CARDS: playWhites(socket_lookup[socket.id], data[1]);
+      case EVENTS.PLAY_CARDS: playResponses(socket_lookup[socket.id], data[1]);
         break;
       case EVENTS.PICK_WINNER: pickWinner(socket_lookup[socket.id], data[1]);
         break;
@@ -188,14 +188,14 @@ function removePlayer(socket) {
 */
 function get_game_state() {
   var curr_state = RoundMgr.getState();
-  var curr_whites;
+  var curr_responses;
   if (curr_state == STATES.JUDGING) {
     //if we are in judging mode, we should get the card ids
-    curr_whites = RoundMgr.getWhites();
+    curr_responses = RoundMgr.getResponses();
   } else {
-    curr_whites = RoundMgr.getResponded();
+    curr_responses = RoundMgr.getResponded();
   }
-  return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_whites);
+  return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_responses);
 }
 
 /*******************************************************************************
@@ -218,70 +218,70 @@ function get_client_list() {
 function startRound() {
   // if failed for some reason (e.g. player 3 left during intermission)
   // then nothing is done
-  if (!RoundMgr.newRound(_.pluck(players, 'name'), Deck.getBlackCard())) {
+  if (!RoundMgr.newRound(_.pluck(players, 'name'), Deck.getPromptCard())) {
     return;
   }
 
-  log('STATE: PLAYING (new round started with black ' 
-    + RoundMgr.getBlackId() + ' [' + RoundMgr.getBlackExtra() + ' extra])');
-  log('  ' + RoundMgr.getJudge() + ' is judging, does not get any supranormal whites');
+  log('STATE: PLAYING (new round started with prompt ' 
+    + RoundMgr.getPromptId() + ' [' + RoundMgr.getPromptExtra() + ' extra])');
+  log('  ' + RoundMgr.getJudge() + ' is judging, does not get any supranormal responses');
 
   // draw enough cards for round
   for (p in players) {
     if (RoundMgr.getJudge() != p) {
-      drawWhites(p, draw_amount + RoundMgr.getBlackExtra() - players[p]['whites'].length);
+      drawResponses(p, draw_amount + RoundMgr.getPromptExtra() - players[p]['responses'].length);
     }
   }
-  io.to('game').emit('state', [RoundMgr.getState(), RoundMgr.getBlackId()]);
+  io.to('game').emit('state', [RoundMgr.getState(), RoundMgr.getPromptId()]);
   io.to('game').emit('event', [EVENTS.ANNOUNCE_JUDGE, RoundMgr.getJudge()]);
 }
 
 /*******************************************************************************
-* gives a user white cards and syncs their hand
+* gives a user response cards and syncs their hand
 * PRIVATE
 * BROADCASTS
 */
-function drawWhites(p_id, count) {
+function drawResponses(p_id, count) {
   for (var i = 0; i < count; i++) {
-    var white = Deck.getWhiteCard();
-    players[p_id]['whites'].push(white);
+    var response = Deck.getResponseCard();
+    players[p_id]['responses'].push(response);
   }
-  io.to(players[p_id]['socket']).emit('event', [EVENTS.SYNC_HAND, players[p_id]['whites']]);
+  io.to(players[p_id]['socket']).emit('event', [EVENTS.SYNC_HAND, players[p_id]['responses']]);
 }
 
 /*******************************************************************************
-* plays white cards for a given user
+* plays response cards for a given user
 * PUBLIC
 * BROADCASTS
 */
-function playWhites(p_id, whites) {
+function playResponses(p_id, responses) {
   if (RoundMgr.getState() != STATES.PLAYING) {
     log('WARNING: round not in play; cannot play cards now');
     return false;
   } else if (p_id == RoundMgr.getJudge()) {
-    log('WARNING: the round judge cannot play white cards');
+    log('WARNING: the round judge cannot play response cards');
     return false;
-  } else if (whites.length != 1 + RoundMgr.getBlackExtra()) {
-    log('WARNING: user must play ' + (1 + RoundMgr.getBlackExtra()) + ' whites');
+  } else if (responses.length != 1 + RoundMgr.getPromptExtra()) {
+    log('WARNING: user must play ' + (1 + RoundMgr.getPromptExtra()) + ' responses');
     return false;
   }
   // ensure the player has these cards
-  if (_.difference(whites, players[p_id]['whites']).length != 0) {
+  if (_.difference(responses, players[p_id]['responses']).length != 0) {
     log('WARNING: user does not have those cards');
     return false;
   }
   // TODO: need to prevent a user from playing the same card multiple times
   
   if (debug) {
-    log('  player ' + p_id + ' playing cards [' + whites + ']');
+    log('  player ' + p_id + ' playing cards [' + responses + ']');
   }
   // play their cards and move to judging if this is the last player
-  if (RoundMgr.playWhitesById(p_id, whites)) {
+  if (RoundMgr.playResponsesById(p_id, responses)) {
     handleNewRoundState();
   }
   // remove cards from player's hand
-  for (w in whites) {
-    players[p_id]['whites'] = _.without(players[p_id]['whites'], whites[w]);
+  for (w in responses) {
+    players[p_id]['responses'] = _.without(players[p_id]['responses'], responses[w]);
   }
   
   io.to('game').emit('event', [EVENTS.PLAY_CARDS, p_id]);
@@ -296,9 +296,9 @@ function playWhites(p_id, whites) {
 function handleJudging() {
   io.to('game').emit('state', [RoundMgr.getState()]);
   // reveal cards to everyone
-  for (p_id in RoundMgr.getWhites()) {
+  for (p_id in RoundMgr.getResponses()) {
     io.to('game').emit('event', [EVENTS.SHOW_CARDS, p_id,
-      RoundMgr.getWhites()[p_id]]);
+      RoundMgr.getResponses()[p_id]]);
   }
   log('STATE: JUDGING (all users have played, judging begins)');
 }

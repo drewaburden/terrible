@@ -4,5 +4,5 @@ function Gamestate(state) {
 	this.state = state;
 	this.judge = judge;
 	this.players = players;
-	this.whites = whites;
+	this.responses = responses;
 }
