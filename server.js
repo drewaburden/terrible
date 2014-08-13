@@ -303,9 +303,9 @@ function start_judging() {
   RoundMgr.setState(STATES.JUDGING);
   io.to('game').emit('state', [RoundMgr.getState()]);
   // reveal cards to everyone
-  for (p_id in RoundMgr.getResponses()) {
+  for (p_id in RoundMgr.getWhites()) {
     io.to('game').emit('event', [EVENTS.SHOW_CARDS, p_id,
-      RoundMgr.getResponses()[p_id]]);
+      RoundMgr.getWhites()[p_id]]);
   }
   log('STATE: JUDGING (all users have played, judging begins)');
 }

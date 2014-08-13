@@ -96,11 +96,12 @@ RoundManager.prototype.setBlackCard = function(black) {
 	this.round_black_extra = black[1];
 }
 
-// used by gamestate
 RoundManager.prototype.getWhites = function() {
 	return this.round_whites;
 }
 
+
+// used by gamestate
 RoundManager.prototype.getResponded = function () {
 	return this.round_responded;
 }
