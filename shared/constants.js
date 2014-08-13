@@ -3,7 +3,8 @@ global.STATES = {
 	LOBBY: 0,
 	PLAYING: 1,
 	JUDGING: 2,
-	INTERMISSION: 3
+	INTERMISSION: 3,
+	PLAYING_RESET: 4
 }
 
 global.EVENTS = {

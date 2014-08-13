@@ -164,39 +164,21 @@ function remove_player(socket) {
   delete players[id];
   delete socket_lookup[socket.id];
   io.to('game').emit('event', [EVENTS.QUIT, id]);
-  
-  // not enough players for the round
-  if (RoundMgr.getPlayers() == 2 && !waiting) {
-    // enough players for a new one
-    if (_.size(players) > 2) {
-      if (debug) {
-        log('  not enough players, starting a new round');
-      }
-      setTimeout(start_round, state_switch_time);
-    }
-    // not enough; go to lobby
-    else {
-      if (debug) {
-        log('  not enough players, returning to lobby');
-      }
-      setTimeout(start_lobby, state_switch_time);
-    }
-  }
-  // handle some cases if a round is going
-  else if (RoundMgr.getState() == STATES.PLAYING
-    || RoundMgr.getState() == STATES.JUDGING) {
-    // the judge quit, start a new round
-    if (RoundMgr.getJudge() == id) {
-      setTimeout(start_round, state_switch_time);
-      if (debug) {
-        log('  the judge quit, starting a new round');
-      }
-    }
-    // remove the user's cards from play otherwise
-    else {
-      RoundMgr.deleteWhitesById(id);
-      //TODO: remove player
-      //RoundMgr.setPlayers(RoundMgr.getPlayers() - 1);
+  if(RoundMgr.removePlayer(id) == true) {
+    switch (RoundMgr.getState()) {
+      case STATES.LOBBY:
+        if (debug) {
+          log('  not enough players, returning to lobby');
+        }
+        setTimeout(start_lobby, state_switch_time);
+        break;
+      case STATES.PLAYING_RESET:
+        setTimeout(start_round, state_switch_time);
+        if (debug) {
+          log('  the judge quit or not enough players, starting a new round');
+        }
+        break;
+      default: break;
     }
   }
 }
@@ -210,9 +192,9 @@ function get_game_state() {
   var curr_whites;
   if(curr_state == STATES.JUDGING) {
     //if we are in judging mode, we should get the card ids
-    curr_whites = RoundMgr.getWhites();
+    curr_whites = RoundMgr.getResponses();
   } else {
-    curr_whites = RoundMgr.getPlayed();
+    curr_whites = RoundMgr.getResponded();
   }
   return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_whites);
 }
@@ -321,9 +303,9 @@ function start_judging() {
   RoundMgr.setState(STATES.JUDGING);
   io.to('game').emit('state', [RoundMgr.getState()]);
   // reveal cards to everyone
-  for (p_id in RoundMgr.getWhites()) {
+  for (p_id in RoundMgr.getResponses()) {
     io.to('game').emit('event', [EVENTS.SHOW_CARDS, p_id,
-      RoundMgr.getWhites()[p_id]]);
+      RoundMgr.getResponses()[p_id]]);
   }
   log('STATE: JUDGING (all users have played, judging begins)');
 }

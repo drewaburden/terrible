@@ -30,9 +30,45 @@ RoundManager.prototype.getPlayers = function() {
 
 RoundManager.prototype.setRoundPlayers = function(players) {
 	this.round_players = players;
-	this.determineNextJudge();
+	// determines the next judge in order
+	this.round_judge = this.round_players[(_.indexOf(this.round_players,
+		this.round_judge) + 1) % this.round_players.length];
 	this.round_responders = this.round_players.length - 1;
 	this.round_responded = 0;
+}
+
+// removes a player from the game
+// returns true if the game state was changed
+RoundManager.prototype.removePlayer = function(id) {
+	this.round_players = _.without(this.round_players, id);
+	// the judge left
+	if (id == this.round_judge) {
+		// return to lobby if not enough players
+		if (this.round_players.length < 3) {
+			this.setState(STATES.LOBBY);
+			return true;
+		}
+		// otherwise, just start a new round
+		else {
+			this.setState(STATES.PLAYING_RESET);
+			return true;
+		}
+	}
+	// a responder left
+	else {
+		this.round_responders--;
+		// delete their cards if they played
+		if (id in this.round_whites) {
+			delete this.round_whites[id];
+			this.round_responded--;
+		}
+		// return to lobby if not enough responders
+		if (this.round_responders < 2) {
+			this.setState(STATES.LOBBY);
+			return true;
+		}
+	}
+	return false;
 }
 
 RoundManager.prototype.playWhitesById = function(id, whites) {
@@ -45,6 +81,7 @@ RoundManager.prototype.playWhitesById = function(id, whites) {
 
 RoundManager.prototype.deleteWhitesById = function(id) {
 	delete this.round_whites[id];
+	this.round_responded--;
 }
 
 RoundManager.prototype.resetWhites = function() {
@@ -72,34 +109,10 @@ RoundManager.prototype.setBlackCard = function(black) {
 	this.round_black_extra = black[1];
 }
 
-RoundManager.prototype.getWhites = function() {
+RoundManager.prototype.getResponses = function() {
 	return this.round_whites;
 }
 
-RoundManager.prototype.getPlayed = function () {
+RoundManager.prototype.getResponded = function () {
 	return this.round_responded;
-}
-
-/*******************************************************************************
-* determines the player next in order after a given one
-* works by incrementing the index and using a modulo to ensure bounds
-*/
-RoundManager.prototype.determineNextJudge = function() {
-	this.round_judge = this.round_players[(_.indexOf(this.round_players,
-		this.round_judge) + 1) % this.round_players.length];
-
-	/*var next = false;
-	var player;
-	for (var i = 0; i < this.round_players.length; i++) {
-		if (next == true) {
-			this.round_judge = this.round_players[i];
-			return;
-		}
-		else if (this.round_players[i] == this.round_judge) {
-			next = true;
-		}
-	}
-	this.round_judge = this.round_players[0];
-	return;
-	this.round_judge = player;*/
 }
