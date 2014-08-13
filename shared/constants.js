@@ -10,14 +10,9 @@ global.STATES = {
 global.EVENTS = {
 	JOIN: 0,
 	QUIT: 1,
-	DRAW_CARD: 2,
 	PLAY_CARDS: 3,
 	SHOW_CARDS: 4,
 	PICK_WINNER: 5,
 	ANNOUNCE_JUDGE: 6,
-	SYNC_HAND: 7,
-}
-
-global.CONSTANTS = {
-
+	SYNC_HAND: 7
 }
