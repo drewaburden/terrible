@@ -105,8 +105,6 @@ function statePlaying(black_id) {
   if (extra > 0) {
     $('#black_extra').text('draw ' + (extra + 1));
     $('#black_extra').removeClass('hidden');
-  } else {
-    $('#black_extra').addClass('hidden');
   }
 }
 
@@ -163,6 +161,7 @@ function addUser(data) {
 * sets a number of elements back to default
 */
 function resetVisualState() {
+  $('#black_extra').addClass('hidden');
   $('#judge_overlay').addClass('hidden');
   $('#played_whites').removeClass('active');
   $('.highlighted').removeClass('highlighted');
