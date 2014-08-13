@@ -103,7 +103,7 @@ function statePlaying(black_id) {
   $('#black_text').text(blacks[black_id][0]);
   extra = blacks[black_id][1];
   if (extra > 0) {
-    $('#black_extra').text('draw ' + (extra + 1));
+    $('#black_extra').text('play ' + (extra + 1));
     $('#black_extra').removeClass('hidden');
   }
 }
