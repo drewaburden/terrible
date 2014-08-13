@@ -24,6 +24,7 @@ h2 { margin-top: 0; margin-bottom: 15px; }
 .card.black { background: #111; color: #fff; border: 1px solid #333; padding: 10px 15px; }
 #black_extra { font-size: 50%; background: #555; padding: 3px 5px; white-space: nowrap; }
 .card.white { background: #fff; color: #111; border: 1px solid #aaa; }
+.card.white.judging { background: #ddd; }
 .cards { float: left; width: 50%; padding: 5px; }
 .card, .cards { transition: 0.1s; }
 
@@ -71,6 +72,8 @@ h2 { margin-top: 0; margin-bottom: 15px; }
 	box-shadow: 0 0 20px 0 #333;
 	padding: 10px 15px;
 }
+
+#overlay_join input, #overlay_join button { font-size: 125%; }
 
 @media only screen and (max-device-width: 719px), only screen and (max-width: 719px) {
 	.pane, .subpane { position: relative; left: 0 !important; top: 0 !important; height: auto; width: 100% !important; }

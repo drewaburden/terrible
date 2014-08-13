@@ -129,6 +129,7 @@ function roundInit(black) {
   $('#played_whites').removeClass('active');
   $('#hand').addClass('active');
   $('.highlighted').removeClass('highlighted');
+  $('.judging').removeClass('judging');
   clear_center();
   update_black(black);
   played = false;
@@ -139,6 +140,8 @@ function roundInit(black) {
 */
 function setJudge(username) {
   current_judge = username;
+  // highlight judge in scoreboard
+  $("#scores [user='" + username + "']").addClass('judging');
   // place screen over hand if judge
   if (my_username == current_judge) {
     $('#judge_overlay').removeClass('hidden');
