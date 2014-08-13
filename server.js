@@ -21,7 +21,7 @@ var intermission_time = 4000; // in ms
 */
 // debug settings
 var debug = true;
-var state_switch_time = 100; // in ms
+var state_switch_time = 0; // in ms
 var test_switch_time = 50; // in ms
 
 // cards are referenced by simple numerical index
@@ -52,7 +52,7 @@ function init() {
   RoundMgr = new RoundManager();
   players = {};
   socket_lookup = {};
-  start_lobby();
+  startLobby();
 }
 
 /*******************************************************************************
@@ -74,16 +74,16 @@ io.on('connection', function (socket) {
   socket.join('login');
   socket.on('req', function (data) {
     switch (data[0]) {
-      case EVENTS.JOIN: add_player(socket, data[1]); break;
-      case EVENTS.QUIT: remove_player(socket); break;
-      case EVENTS.PLAY_CARDS: play_whites(socket_lookup[socket.id], data[1]);
+      case EVENTS.JOIN: addPlayer(socket, data[1]); break;
+      case EVENTS.QUIT: removePlayer(socket); break;
+      case EVENTS.PLAY_CARDS: playWhites(socket_lookup[socket.id], data[1]);
         break;
-      case EVENTS.PICK_WINNER: pick_winner(socket_lookup[socket.id], data[1]);
+      case EVENTS.PICK_WINNER: pickWinner(socket_lookup[socket.id], data[1]);
         break;
     }
   });
   socket.on('disconnect', function () {
-    remove_player(socket);
+    removePlayer(socket);
   });
 });
 
@@ -92,7 +92,7 @@ io.on('connection', function (socket) {
 * PRIVATE
 * BROADCASTS
 */
-function start_lobby() {
+function startLobby() {
   RoundMgr.setState(STATES.LOBBY);
   io.to('game').emit('state', [RoundMgr.getState()]);
   if (debug) {
@@ -105,7 +105,7 @@ function start_lobby() {
 * PUBLIC
 * BROADCASTS
 */
-function add_player(socket, name) {
+function addPlayer(socket, name) {
   // TODO: allow rejoining
   // for now, don't allow any "duplicate" names
   if (name in players) {
@@ -141,7 +141,7 @@ function add_player(socket, name) {
     if (debug) {
       log('  enough players have joined, starting');
     }
-    setTimeout(start_round, state_switch_time);
+    setTimeout(startRound, state_switch_time);
   }
   return true;
 }
@@ -151,7 +151,7 @@ function add_player(socket, name) {
 * PUBLIC
 * BROADCASTS
 */
-function remove_player(socket) {
+function removePlayer(socket) {
   var id = socket_lookup[socket.id];
   // if they haven't joined the game yet, don't do anything
   if (id == undefined) {
@@ -170,10 +170,10 @@ function remove_player(socket) {
         if (debug) {
           log('  not enough players, returning to lobby');
         }
-        setTimeout(start_lobby, state_switch_time);
+        setTimeout(startLobby, state_switch_time);
         break;
       case STATES.PLAYING_RESET:
-        setTimeout(start_round, state_switch_time);
+        setTimeout(startRound, state_switch_time);
         if (debug) {
           log('  the judge quit or not enough players, starting a new round');
         }
@@ -216,7 +216,7 @@ function get_client_list() {
 * PRIVATE
 * BROADCASTS
 */
-function start_round() {
+function startRound() {
   RoundMgr.setState(STATES.PLAYING, [_.pluck(players, 'name'),
     Deck.getBlackCard()]);
 
@@ -229,15 +229,8 @@ function start_round() {
   // draw enough cards for round
   for (p in players) {
     players[p]['waiting'] = false; // set all new joiners active
-    var missing = draw_amount - players[p]['whites'].length;
-    for (var i = 0; i < missing; i++) {
-      draw_white(p);
-    }
-    // give any extra cards to non-judge players
-    if (p != RoundMgr.getJudge()) {
-      for (var i = 0; i < RoundMgr.getBlackExtra(); i++) {
-        draw_white(p);
-      }
+    if (RoundMgr.getJudge() != p) {
+      drawWhites(p, draw_amount + RoundMgr.getBlackExtra() - players[p]['whites'].length);
     }
   }
   io.to('game').emit('state', [RoundMgr.getState(), RoundMgr.getBlackId()]);
@@ -245,22 +238,24 @@ function start_round() {
 }
 
 /*******************************************************************************
-* gives a user an additional white card
+* gives a user white cards and syncs their hand
 * PRIVATE
 * BROADCASTS
 */
-function draw_white(p_id) {
-  var white = Deck.getWhiteCard();
-  players[p_id]['whites'].push(white);
-  io.to(players[p_id]['socket']).emit('event', [EVENTS.DRAW_CARD, white]);
+function drawWhites(p_id, count) {
+  for (var i = 0; i < count; i++) {
+    var white = Deck.getWhiteCard();
+    players[p_id]['whites'].push(white);
+  }
+  io.to(players[p_id]['socket']).emit('event', [EVENTS.SYNC_HAND, players[p_id]['whites']]);
 }
 
 /*******************************************************************************
-* plays a white card for a given user
+* plays white cards for a given user
 * PUBLIC
 * BROADCASTS
 */
-function play_whites(p_id, whites) {
+function playWhites(p_id, whites) {
   if (RoundMgr.getState() != STATES.PLAYING) {
     log('WARNING: round not in play; cannot play cards now');
     return false;
@@ -288,7 +283,7 @@ function play_whites(p_id, whites) {
   }
   // if everyone's played, move to judging
   if (RoundMgr.getState() == STATES.JUDGING) {
-    setTimeout(start_judging, state_switch_time);
+    setTimeout(startJudging, state_switch_time);
   }
   io.to('game').emit('event', [EVENTS.PLAY_CARDS, p_id]);
   return true;
@@ -299,7 +294,7 @@ function play_whites(p_id, whites) {
 * PRIVATE
 * BROADCASTS
 */
-function start_judging() {
+function startJudging() {
   RoundMgr.setState(STATES.JUDGING);
   io.to('game').emit('state', [RoundMgr.getState()]);
   // reveal cards to everyone
@@ -315,7 +310,7 @@ function start_judging() {
 * PUBLIC
 * BROADCASTS
 */
-function pick_winner(p_id, winner) {
+function pickWinner(p_id, winner) {
   if (RoundMgr.getState() != STATES.JUDGING) {
     log('WARNING: not everyone has played; cannot judge now');
     return false;
@@ -330,7 +325,7 @@ function pick_winner(p_id, winner) {
     return false;
   }
   players[winner]['score']++;
-  setTimeout(start_intermission(winner), state_switch_time);
+  setTimeout(startIntermission(winner), state_switch_time);
   return true;
 }
 
@@ -339,13 +334,13 @@ function pick_winner(p_id, winner) {
 * PRIVATE
 * BROADCASTS
 */
-function start_intermission(winner) {
+function startIntermission(winner) {
   RoundMgr.setState(STATES.INTERMISSION);
   io.to('game').emit('state', [RoundMgr.getState(), winner]);
   if (debug) {
     log('STATE: INTERMISSION (' + winner + ' won; waiting for next round)');
   }
-  setTimeout(start_round, intermission_time);
+  setTimeout(startRound, intermission_time);
 }
 
 /*******************************************************************************

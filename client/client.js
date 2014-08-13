@@ -140,7 +140,7 @@ s.on('event', function (data) {
   switch(data[0]) {
     case global.EVENTS.JOIN: addUser(data[1]); break;
     case global.EVENTS.QUIT: $("[user='" + data[1] + "']").remove(); break;
-    case global.EVENTS.DRAW_CARD: add_hand(data[1]); break;
+    case global.EVENTS.SYNC_HAND: syncHand(data[1]); break;
     case global.EVENTS.PLAY_CARDS: add_blank(); break;
     case global.EVENTS.SHOW_CARDS: add_whites(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
@@ -186,10 +186,13 @@ function setJudge(username) {
 /*******************************************************************************
 * adds a received card to the user's hand
 */
-function add_hand(id) {
-  var html = '<div class="card white" onclick="prepare_to_play($(this))" ';
-  html += 'white_id="' + id + '">' + whites[id] + '</div>';
-  $('#hand').append(html);
+function syncHand(hand) {
+  var html = '';
+  for (var i = 0; i < hand.length; i++) {
+    html += '<div class="card white" onclick="prepare_to_play($(this))" ';
+    html += 'white_id="' + hand[i] + '">' + whites[hand[i]] + '</div>';
+  }
+  $('#hand').html(html);
 }
 
 /*******************************************************************************
