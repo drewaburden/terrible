@@ -24,6 +24,8 @@ RoundManager.prototype.setState = function(state, data) {
 	}
 }
 
+// starts a new round
+// returns true if the game state was changed 
 RoundManager.prototype.newRound = function(players, black) {
 	if (players.length < 3) {
 		return false;
