@@ -25,8 +25,8 @@ var state_switch_time = 0; // in ms
 var test_switch_time = 50; // in ms
 
 // cards are referenced by simple numerical index
-blacks_default = require(__base + '/shared/blacks.json');
-whites_default = require(__base + '/shared/whites.json');
+blacks_default = require(__base + '/shared/prompts.json');
+whites_default = require(__base + '/shared/responses.json');
 var Deck;
 
 // because players can leave during the game, they are referenced by id

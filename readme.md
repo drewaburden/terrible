@@ -1,6 +1,6 @@
 # terrible
 
-A *Cards Against Humanity* clone for a single room of users. Extremely WIP if not hacky.
+A *Cards Against Humanity* style-game for a single room of users. Extremely WIP if not hacky.
 
 ![](etc/example.png)
 
@@ -14,7 +14,7 @@ Runs on Node.js.
 
 ## Setup
 
-Create a `shared/blacks.json` (these are the prompts, which are black cards in *CAH*) and `shared/whites.json` (these are the responses, likewise white cards) based off the example files. These can be *Cards Against Humanity* or *Apples to Apples* style, or anything else that follows a **prompt : response(s)** format.
+Create a `shared/prompts.json` (these are the black cards in *CAH*) and `shared/responses.json` (likewise, the white cards) based off the example files. These can be *CAH* or *Apples to Apples* style, or anything else that follows a **prompt : response(s)** format.
 
 Once that's done, run `node server.js` and open `localhost:8080` in your web browser. Three or more players are required for a game.
 

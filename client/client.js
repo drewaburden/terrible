@@ -17,9 +17,9 @@ var played;
 * here we load the cards
 */
 function load() {
-  $.getJSON("blacks.json", function (data) {
+  $.getJSON("prompts.json", function (data) {
     blacks = data;
-    $.getJSON("whites.json", function (data) {
+    $.getJSON("responses.json", function (data) {
       whites = data;
       init();
     });
