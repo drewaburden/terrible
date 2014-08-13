@@ -192,7 +192,7 @@ function get_game_state() {
   var curr_whites;
   if(curr_state == STATES.JUDGING) {
     //if we are in judging mode, we should get the card ids
-    curr_whites = RoundMgr.getResponses();
+    curr_whites = RoundMgr.getWhites();
   } else {
     curr_whites = RoundMgr.getResponded();
   }

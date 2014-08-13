@@ -109,7 +109,7 @@ RoundManager.prototype.setBlackCard = function(black) {
 	this.round_black_extra = black[1];
 }
 
-RoundManager.prototype.getResponses = function() {
+RoundManager.prototype.getWhites = function() {
 	return this.round_whites;
 }
 
