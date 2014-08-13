@@ -195,31 +195,9 @@ function remove_player(socket) {
     // remove the user's cards from play otherwise
     else {
       RoundMgr.deleteWhitesById(id);
-      RoundMgr.setPlayers(RoundMgr.getPlayers() - 1);
+      //TODO: remove player
+      //RoundMgr.setPlayers(RoundMgr.getPlayers() - 1);
     }
-  }
-}
-
-/*******************************************************************************
-* determines the player next in order after a given one
-* PRIVATE
-*/
-function get_next_player(id) {
-  if (debug) {
-    log('    determining player after ' + id);
-  }
-  var next = false;
-  for (p in players) {
-    if (next == true) {
-      return p;
-    }
-    else if (p == id) {
-      next = true;
-    }
-  }
-  // if no match was found or null was passed, the first player is next
-  for (p in players) {
-    return p;
   }
 }
 
@@ -257,21 +235,16 @@ function get_client_list() {
 * BROADCASTS
 */
 function start_round() {
-  RoundMgr.setState(STATES.PLAYING);
-  RoundMgr.setPlayers(_.size(players) - 1);
+  RoundMgr.setState(STATES.PLAYING, [_.pluck(players, 'name'),
+    Deck.getBlackCard()]);
 
-  // pick random question and set up extra draws
-  RoundMgr.setBlack(Deck.getBlackCard()); //Should be done in RoundManager
-  RoundMgr.setExtraWhites(RoundMgr.getBlack()[1]); //Should be done in RoundManager
   log('STATE: PLAYING (new round started with black ' 
-    + RoundMgr.getBlack()[0] + ' [' + RoundMgr.getExtraWhites() + ' extra])');
+    + RoundMgr.getBlackId() + ' [' + RoundMgr.getBlackExtra() + ' extra])');
 
   // decide who is judging
-  RoundMgr.setJudge(get_next_player(RoundMgr.getJudge())); //Should be done in RoundManager
   log('  ' + RoundMgr.getJudge() + ' is judging, does not get any supranormal whites');
 
   // draw enough cards for round
-  RoundMgr.resetWhites(); //Should be done in RoundManager
   for (p in players) {
     players[p]['waiting'] = false; // set all new joiners active
     var missing = draw_amount - players[p]['whites'].length;
@@ -280,12 +253,12 @@ function start_round() {
     }
     // give any extra cards to non-judge players
     if (p != RoundMgr.getJudge()) {
-      for (var i = 0; i < RoundMgr.getExtraWhites(); i++) {
+      for (var i = 0; i < RoundMgr.getBlackExtra(); i++) {
         draw_white(p);
       }
     }
   }
-  io.to('game').emit('state', [RoundMgr.getState(), RoundMgr.getBlack()[0]]);
+  io.to('game').emit('state', [RoundMgr.getState(), RoundMgr.getBlackId()]);
   io.to('game').emit('event', [EVENTS.ANNOUNCE_JUDGE, RoundMgr.getJudge()]);
 }
 
@@ -312,8 +285,8 @@ function play_whites(p_id, whites) {
   } else if (p_id == RoundMgr.getJudge()) {
     log('WARNING: the round judge cannot play white cards');
     return false;
-  } else if (whites.length != 1 + RoundMgr.getExtraWhites()) {
-    log('WARNING: user must play ' + (1 + RoundMgr.getExtraWhites()) + ' whites');
+  } else if (whites.length != 1 + RoundMgr.getBlackExtra()) {
+    log('WARNING: user must play ' + (1 + RoundMgr.getBlackExtra()) + ' whites');
     return false;
   }
   // ensure the player has these cards
@@ -332,7 +305,7 @@ function play_whites(p_id, whites) {
     log('  player ' + p_id + ' played cards [' + whites + ']');
   }
   // if everyone's played, move to judging
-  if (_.size(RoundMgr.getWhites()) == RoundMgr.getPlayers()) {
+  if (RoundMgr.getState() == STATES.JUDGING) {
     setTimeout(start_judging, state_switch_time);
   }
   io.to('game').emit('event', [EVENTS.PLAY_CARDS, p_id]);
