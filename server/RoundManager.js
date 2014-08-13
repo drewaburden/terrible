@@ -2,13 +2,13 @@ module.exports = RoundManager;
 function RoundManager() {
 	// round logic
 	this.round_state = STATES.INIT;
+	this.round_players = []; // all users in the round
 	this.round_judge = -1;
+	this.round_responders = -1; // number of users that will play white cards
+	this.round_responded = -1; // number of users that have done so
 	this.round_black_id = -1;
 	this.round_black_extra = -1;
 	this.round_whites = {};
-	this.round_players = []; // all users in the round
-	this.round_responders = -1; // users that will play white cards
-	this.round_responded = -1; // users that have played white cards
 }
 
 RoundManager.prototype.getState = function() {
