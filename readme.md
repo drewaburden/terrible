@@ -1,6 +1,6 @@
 # terrible
 
-A *Cards Against Humanity* style-game for a single room of users. Extremely WIP if not hacky.
+A *Cards Against Humanity* style game for a single room of users. Extremely WIP if not hacky.
 
 ![](etc/example.png)
 

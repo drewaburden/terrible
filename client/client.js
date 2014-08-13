@@ -137,6 +137,7 @@ s.on('event', function (data) {
   log('player event: ' + data);
   switch(data[0]) {
     case global.EVENTS.JOIN: addUser(data[1]); break;
+    case global.EVENTS.NAME: my_username = data[1]; break;
     case global.EVENTS.QUIT: $("[user='" + data[1] + "']").remove(); break;
     case global.EVENTS.SYNC_HAND: syncHand(data[1]); break;
     case global.EVENTS.PLAY_CARDS: add_blank(); break;

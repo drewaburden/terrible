@@ -104,6 +104,10 @@ function handleLobby() {
 * BROADCASTS
 */
 function addPlayer(socket, name) {
+  // ensure the client's username meets guidelines, replace with underscores
+  var name = name.replace(/[\W]+/g,'_');
+  socket.emit('event', [EVENTS.NAME, name]);
+
   // TODO: allow rejoining
   // for now, don't allow any "duplicate" names
   if (name in players) {
