@@ -1,6 +1,8 @@
 # terrible
 
-A *Cards Against Humanity* clone for a single room of users. Extremely WIP, probably not terribly well coded at the moment.
+A *Cards Against Humanity* clone for a single room of users. Extremely WIP if not hacky.
+
+![](etc/example.png)
 
 ## Requirements
 
@@ -16,4 +18,7 @@ Create a `shared/blacks.json` (these are the prompts, which are black cards in *
 
 Once that's done, run `node server.js` and open `localhost:8080` in your web browser. Three or more players are required for a game.
 
-![](etc/example.png)
+## Known Issues
+
+  * lots, probably
+  * users newly joining won't receive a full game state until the next round
