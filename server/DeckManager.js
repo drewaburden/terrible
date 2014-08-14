@@ -65,3 +65,14 @@ DeckManager.prototype.createResponsesDraw = function() {
 DeckManager.prototype.createPromptsDraw = function() {
 	return _.shuffle(_.range(this.prompts.length));
 }
+
+//add a new card to the prompts array
+DeckManager.prototype.addPrompt = function(content, num_responses) {
+	var prompt = [content, num_responses];
+	this.prompts.push(prompt);
+};
+
+//add a new card to the responses array
+DeckManager.prototype.addResponse = function(content) {
+	this.responses.push(content);
+}

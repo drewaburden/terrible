@@ -1,4 +1,5 @@
 var fs = require('fs');
+
 exports.DeckLoader = DeckLoader;
 function DeckLoader() {
 	this.promptsFile = __base + '/shared/prompts.json';
