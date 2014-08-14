@@ -83,6 +83,11 @@ s.on('state', function (data) {
   }
 });
 
+s.on('disconnect', function (data) {
+  quit();
+  alert('Lost connection to server :(');
+});
+
 /*******************************************************************************
 * returned to lobby
 */
