@@ -100,7 +100,7 @@ function statePlaying(prompt_id) {
   played = false; 
 
   // set the prompt card
-  $('#black_text').text(prompts[prompt_id][0]);
+  $('#black_text').html(prompts[prompt_id][0]);
   extra = prompts[prompt_id][1];
   if (extra > 0) {
     $('#black_extra').text('play ' + (extra + 1));
