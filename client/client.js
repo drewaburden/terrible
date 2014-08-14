@@ -148,6 +148,7 @@ s.on('event', function (data) {
     case global.EVENTS.PLAY_CARDS: add_blank(); break;
     case global.EVENTS.SHOW_CARDS: add_responses(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
+    case global.EVENTS.UPDATE_STATE: updateToState(data[1]); break;
     default: break;
   }
 });
@@ -245,4 +246,12 @@ function add_responses(user, cards) {
   }
   html += '</div>';
   $('#played_whites').append(html);
+}
+
+
+/*******************************************************************************
+* updates the client's UI to the latest game state given in the data
+*/
+function updateToState(gamestate) {
+  //update the UI here
 }

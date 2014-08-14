@@ -142,6 +142,9 @@ function addPlayer(socket, name) {
       log('  enough players have joined, starting');
     }
     setTimeout(startRound, state_switch_time);
+  } else if (_.size(players) > 3) {
+    //If the player is joining an IN PROGRESS game, then send them the updated game state
+    socket.emit('event', [EVENTS.UPDATE_STATE, [get_game_state()]])
   }
   return true;
 }
