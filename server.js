@@ -25,8 +25,6 @@ var state_switch_time = 0; // in ms
 var test_switch_time = 50; // in ms
 
 // cards are referenced by simple numerical index
-prompts_default = require(__base + '/shared/prompts.json');
-responses_default = require(__base + '/shared/responses.json');
 var Deck;
 
 // because players can leave during the game, they are referenced by id
@@ -47,7 +45,7 @@ function log(text) {
 function init() {
   server.listen(server_port);
   log('STATE: INIT (setting up server)');
-  Deck = new DeckManager(prompts_default, responses_default);
+  Deck = new DeckManager();
   RoundMgr = new RoundManager();
   players = {};
   socket_lookup = {};

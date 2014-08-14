@@ -1,7 +1,10 @@
+var DeckLoader = require(__base + '/server/DeckLoader').DeckLoader;
+
 module.exports = DeckManager;
-function DeckManager(prompts, responses) {
-	this.prompts = prompts;
-	this.responses = responses;
+function DeckManager() {
+	this.loader = new DeckLoader();
+	this.prompts = this.loader.loadPromptsFromFile();
+	this.responses = this.loader.loadResponsesFromFile();
 	this.responses_draw = this.createResponsesDraw();
 	this.prompts_draw = this.createPromptsDraw();
 }
@@ -75,4 +78,14 @@ DeckManager.prototype.addPrompt = function(content, num_responses) {
 //add a new card to the responses array
 DeckManager.prototype.addResponse = function(content) {
 	this.responses.push(content);
+}
+
+//reload prompts from DeckLoader
+DeckManager.prototype.reloadPrompts = function() {
+	this.setPrompts(this.loader.loadPromptsFromFile());
+}
+
+//reload responses from DeckLoader
+DeckManager.prototype.reloadResponses = function() {
+	this.setResponses(this.loader.loadResponsesFromFile());
 }
