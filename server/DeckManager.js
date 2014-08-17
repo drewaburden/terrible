@@ -59,6 +59,11 @@ DeckManager.prototype.setResponses = function(responses) {
 	this.responses = responses;
 }
 
+// returns all cards for distribution to clients
+DeckManager.prototype.getAllCards = function() {
+	return [this.prompts, this.responses];
+}
+
 //creates a shuffled array of all response card IDs
 DeckManager.prototype.createResponsesDraw = function() {
 	return _.shuffle(_.range(this.responses.length));

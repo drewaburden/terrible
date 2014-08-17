@@ -1,6 +1,7 @@
 var s = io('/');
 
-var prompts, responses;
+var prompts = null;
+var responses = null;
 
 function log(text) {
   console.log(text);
@@ -16,21 +17,9 @@ var played;
 /*******************************************************************************
 * here we load the cards
 */
-function load() {
-  $.getJSON("prompts.json", function (data) {
-    prompts = data;
-    $.getJSON("responses.json", function (data) {
-      responses = data;
-      init();
-    });
-  });
-}
-
-/*******************************************************************************
-* here we start the game
-*/
-function init() {
-  state = global.STATES.INIT;
+function receiveDeck(data) {
+  prompts = data[0];
+  responses = data[1];
 }
 
 /*******************************************************************************
@@ -41,6 +30,11 @@ function request(payload) {
 }
 
 function join(username) {
+  if (prompts == null || responses == null) {
+    alert('Still receiving deck from server.');
+    return;
+  }
+  state = global.STATES.INIT;
   my_username = username;
   s.emit("req", [global.EVENTS.JOIN, username]);
   $('#overlay').addClass('hidden');
@@ -149,6 +143,7 @@ s.on('event', function (data) {
     case global.EVENTS.SHOW_CARDS: add_responses(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
     case global.EVENTS.UPDATE_STATE: updateToState(data[1]); break;
+    case global.EVENTS.SEND_DECK: receiveDeck(data[1]); break;
     default: break;
   }
 });

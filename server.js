@@ -68,6 +68,7 @@ app.use(function(req, res){
 */
 io.on('connection', function (socket) {
   log('INFO: ' + socket.handshake.address.address + ' connected');
+  socket.emit('event', [EVENTS.SEND_DECK, Deck.getAllCards()]);
   socket.join('login');
   socket.on('req', function (data) {
     switch (data[0]) {
@@ -188,7 +189,8 @@ function removePlayer(socket) {
 * PRIVATE
 */
 function get_game_state() {
-  var curr_state = RoundMgr.getState();
+  // TODO: this is causing a server crash
+  /*var curr_state = RoundMgr.getState();
   var curr_responses;
   if (curr_state == STATES.JUDGING) {
     //if we are in judging mode, we should get the card ids
@@ -196,7 +198,7 @@ function get_game_state() {
   } else {
     curr_responses = RoundMgr.getResponded();
   }
-  return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_responses);
+  return new Gamestate(curr_state, RoundMgr.getJudge(), get_client_list(), curr_responses);*/
 }
 
 /*******************************************************************************
