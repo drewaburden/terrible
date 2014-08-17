@@ -133,7 +133,12 @@ function stateIntermission(user) {
 * event handling
 */
 s.on('event', function (data) {
-  log('player event: ' + data);
+  // don't want to log the entire deck to console
+  if (data[0] != global.EVENTS.SEND_DECK) {
+    log('player event: ' + data);
+  } else {
+    log('player event: received deck');
+  }
   switch(data[0]) {
     case global.EVENTS.JOIN: addUser(data[1]); break;
     case global.EVENTS.NAME: my_username = data[1]; break;
