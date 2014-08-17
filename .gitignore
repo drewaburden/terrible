@@ -1,3 +1,3 @@
 node_modules
-shared/prompts.json
-shared/responses.json
+prompts.json
+responses.json

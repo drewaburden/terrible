@@ -4,7 +4,7 @@ exports.DeckLoader = DeckLoader;
 function DeckLoader() {
 	this.promptsFile = 'prompts.json';
 	this.responsesFile = 'responses.json';
-	this.cardsFolder = __base + '/shared/';
+	this.cardsFolder = __base + '/decks/';
 	this.encodingType = 'utf8';
 }
 
