@@ -111,7 +111,7 @@ function statePlaying(prompt_id) {
 * judging started
 */
 function stateJudging() {
-  clear_center();
+  clearCenter();
   if (my_username == current_judge) {
     $('#played_whites').addClass('active');
   }
@@ -139,8 +139,8 @@ s.on('event', function (data) {
     case global.EVENTS.NAME: my_username = data[1]; break;
     case global.EVENTS.QUIT: $("[user='" + data[1] + "']").remove(); break;
     case global.EVENTS.SYNC_HAND: syncHand(data[1]); break;
-    case global.EVENTS.PLAY_CARDS: add_blank(); break;
-    case global.EVENTS.SHOW_CARDS: add_responses(data[1], data[2]); break;
+    case global.EVENTS.PLAY_CARDS: addBlank(); break;
+    case global.EVENTS.SHOW_CARDS: addResponses(data[1], data[2]); break;
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
     case global.EVENTS.UPDATE_STATE: updateToState(data[1]); break;
     case global.EVENTS.SEND_DECK: receiveDeck(data[1]); break;
@@ -168,7 +168,7 @@ function resetVisualState() {
   $('#played_whites').removeClass('active');
   $('.highlighted').removeClass('highlighted');
   $('.judging').removeClass('judging');
-  clear_center();
+  clearCenter();
 }
 
 /*******************************************************************************
@@ -190,7 +190,7 @@ function setJudge(username) {
 function syncHand(hand) {
   var html = '';
   for (var i = 0; i < hand.length; i++) {
-    html += '<div class="card white" onclick="prepare_to_play($(this))" ';
+    html += '<div class="card white" onclick="prepareToPlay($(this))" ';
     html += 'white_id="' + hand[i] + '">' + responses[hand[i]] + '</div>';
   }
   $('#hand').html(html);
@@ -199,7 +199,7 @@ function syncHand(hand) {
 /*******************************************************************************
 * staging for playing a set of cards
 */
-function prepare_to_play(card_element) {
+function prepareToPlay(card_element) {
   if (state != global.STATES.PLAYING || current_judge == my_username
     || played) {
     return;
@@ -218,14 +218,14 @@ function prepare_to_play(card_element) {
 /*******************************************************************************
 * clears the center pane
 */
-function clear_center() {
+function clearCenter() {
   $('#played_whites').empty();
 }
 
 /*******************************************************************************
 * adds a blank card to the center
 */
-function add_blank() {
+function addBlank() {
   var html = '<div class="cards"><div class="card white">&nbsp;</div></div>';
   $('#played_whites').append(html);
 }
@@ -233,7 +233,7 @@ function add_blank() {
 /*******************************************************************************
 * adds judgeable responses to the center
 */
-function add_responses(user, cards) {
+function addResponses(user, cards) {
   var html = '<div class="cards" user="' + user + '" onclick="pick(\'' + user;
   html += '\')">';
   for (var i = 0; i < cards.length; i++) {
