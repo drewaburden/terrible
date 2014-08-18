@@ -14,13 +14,24 @@ Runs on Node.js.
 
 ## Setup
 
-Create a `decks/prompts.json` (these are the black cards in *CAH*) and `decks/responses.json` (likewise, the white cards) based off the example files. These can be *CAH* or *Apples to Apples* style, or anything else that follows a **prompt : response(s)** format.
+Create a `prompts.json` (these are the black cards in *CAH*, or the green ones in *Apples to Apples*) and `responses.json` (likewise, the white and red cards) in a subfolder of /decks based off the /decks/example files. These can be in the style of either of those games, or anything else that follows a **prompt : response(s)** format.
 
-The numbers in the prompts file determine how many extra responses are played to that prompt. So, a "Make a haiku: ____ / ____ / ____" prompt would need 2 extras.
+Once that's done, run `node server.js deckname` and open `localhost:8080` in your web browser. Three or more players are required for a game.
 
-Once that's done, run `node server.js` and open `localhost:8080` in your web browser. Three or more players are required for a game.
+### Card JSON Structure
+
+Prompts: **text**, **subtext**, **extra responses^1**
+
+Responses: **text**, **subtext**
+
+^1How many extra responses are played to that prompt. So, a "Make a haiku: ____ / ____ / ____" prompt would need 2 extras.
 
 ## Known Issues
 
-  * lots, probably
+  * connection loss handling is incomplete
   * users newly joining won't receive a full game state until the next round
+  * selection of new judge when old one leaves may favor the first player
+
+## Planned Features
+  * a way to see round history
+  * optional notification sounds

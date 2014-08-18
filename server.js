@@ -25,7 +25,8 @@ var state_switch_time = 0; // in ms
 var test_switch_time = 50; // in ms
 
 // cards are referenced by simple numerical index
-var Deck;
+var deck_id = "example";
+var DeckMgr;
 
 // because players can leave during the game, they are referenced by id
 var players;
@@ -43,9 +44,10 @@ function log(text) {
 * PRIVATE
 */
 function init() {
+  deck_id = process.argv[2];
   server.listen(server_port);
   log('STATE: INIT (setting up server)');
-  Deck = new DeckManager();
+  DeckMgr = new DeckManager(deck_id);
   RoundMgr = new RoundManager();
   players = {};
   socket_lookup = {};
@@ -68,7 +70,7 @@ app.use(function(req, res){
 */
 io.on('connection', function (socket) {
   log('INFO: ' + socket.request.connection.remoteAddress + ' connected');
-  socket.emit('event', [EVENTS.SEND_DECK, Deck.getAllCards()]);
+  socket.emit('event', [EVENTS.SEND_DECK, DeckMgr.getAllCards()]);
   socket.join('login');
   socket.on('req', function (data) {
     switch (data[0]) {
@@ -221,7 +223,7 @@ function get_client_list() {
 function startRound() {
   // if failed for some reason (e.g. player 3 left during intermission)
   // then nothing is done
-  if (!RoundMgr.newRound(_.pluck(players, 'name'), Deck.getPromptCard())) {
+  if (!RoundMgr.newRound(_.pluck(players, 'name'), DeckMgr.getPromptCard())) {
     return;
   }
 
@@ -246,7 +248,7 @@ function startRound() {
 */
 function drawResponses(p_id, count) {
   for (var i = 0; i < count; i++) {
-    var response = Deck.getResponseCard();
+    var response = DeckMgr.getResponseCard();
     players[p_id]['responses'].push(response);
   }
   io.to(players[p_id]['socket']).emit('event', [EVENTS.SYNC_HAND, players[p_id]['responses']]);

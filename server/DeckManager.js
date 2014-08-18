@@ -1,8 +1,8 @@
 var DeckLoader = require(__base + '/server/DeckLoader').DeckLoader;
 
 module.exports = DeckManager;
-function DeckManager() {
-	this.loader = new DeckLoader();
+function DeckManager(deck_id) {
+	this.loader = new DeckLoader(deck_id);
 	this.prompts = this.loader.loadPromptsFromFile();
 	this.responses = this.loader.loadResponsesFromFile();
 	this.responses_draw = this.createResponsesDraw();
@@ -35,7 +35,7 @@ DeckManager.prototype.getPromptCard = function() {
 		this.reloadPromptsDrawDeck();
 		card = this.prompts_draw.pop();
 	}
-	var extra = this.prompts[card][1]; // number of extra cards to draw
+	var extra = this.prompts[card][2]; // number of extra cards to draw
 	return [card, extra];
 }
 

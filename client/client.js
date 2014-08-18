@@ -99,8 +99,12 @@ function statePlaying(prompt_id) {
   played = false; 
 
   // set the prompt card
-  $('#black_text').html(prompts[prompt_id][0]);
-  extra = prompts[prompt_id][1];
+  var text = prompts[prompt_id][0];
+  if (prompts[prompt_id][1].length > 0) {
+    text += '<br><span class="subtext">' + prompts[prompt_id][1] + '</span>';
+  }
+  $('#black_text').html(text);
+  extra = prompts[prompt_id][2];
   if (extra > 0) {
     $('#black_extra').text('play ' + (extra + 1));
     $('#black_extra').removeClass('hidden');
@@ -196,7 +200,12 @@ function syncHand(hand) {
   var html = '';
   for (var i = 0; i < hand.length; i++) {
     html += '<div class="card white" onclick="prepareToPlay($(this))" ';
-    html += 'white_id="' + hand[i] + '">' + responses[hand[i]] + '</div>';
+    html += 'white_id="' + hand[i] + '">' + responses[hand[i]][0]
+    if (responses[hand[i]][1].length > 0) {
+          html += '<br><span class="subtext">' + responses[hand[i]][1];
+          html += '</span>';
+    }
+    html += '</div>';
   }
   $('#hand').html(html);
 }
@@ -242,7 +251,11 @@ function addResponses(user, cards) {
   var html = '<div class="cards" user="' + user + '" onclick="pick(\'' + user;
   html += '\')">';
   for (var i = 0; i < cards.length; i++) {
-    html += '<div class="card white">' + responses[cards[i]] + '</div>';
+    html += '<div class="card white">' + responses[cards[i]][0];
+    if (responses[cards[i]][1].length > 0) {
+      html += '<br><span class="subtext">' + responses[cards[i]][1] + '</span>';
+    }
+    html += '</div>';
   }
   html += '</div>';
   $('#played_whites').append(html);

@@ -22,10 +22,12 @@ h2 { margin-top: 0; margin-bottom: 15px; }
 	margin-bottom: -1px;
 }
 .card.black { background: #111; color: #fff; border: 1px solid #333; padding: 10px 15px; }
+.card .subtext { font-weight: normal; font-size: 60%; display: inline-block; }
 #black_extra { font-size: 50%; background: #555; padding: 3px 5px; white-space: nowrap; }
 .card.white { background: #fff; color: #111; border: 1px solid #aaa; }
 .card.white.judging { background: #ddd; }
 .cards { float: left; width: 50%; padding: 5px; }
+.cards:nth-child(odd) { clear: left; }
 .card, .cards { transition: 0.1s; }
 
 #hand.active .card.white:hover, #played_whites.active .cards:hover .card {

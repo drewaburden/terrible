@@ -1,10 +1,10 @@
 var fs = require('fs');
 
 exports.DeckLoader = DeckLoader;
-function DeckLoader() {
+function DeckLoader(deck_id) {
 	this.promptsFile = 'prompts.json';
 	this.responsesFile = 'responses.json';
-	this.cardsFolder = __base + '/decks/';
+	this.cardsFolder = __base + '/decks/' + deck_id + '/';
 	this.encodingType = 'utf8';
 }
 
