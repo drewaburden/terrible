@@ -20,11 +20,11 @@ Once that's done, run `node server.js deckname` and open `localhost:8080` in you
 
 ### Card JSON Structure
 
-Prompts: **text**, **subtext**, **extra responses^1**
+Prompts: **text**, **subtext**, **extra responses**†
 
 Responses: **text**, **subtext**
 
-^1How many extra responses are played to that prompt. So, a "Make a haiku: ____ / ____ / ____" prompt would need 2 extras.
+†How many extra responses are played to that prompt. So, a "Make a haiku: ____ / ____ / ____" prompt would need 2 extras.
 
 ## Known Issues
 
