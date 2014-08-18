@@ -78,8 +78,9 @@ s.on('state', function (data) {
 });
 
 s.on('disconnect', function (data) {
-  quit();
-  alert('Lost connection to server :(');
+  $('#overlay_join').addClass('hidden');
+  $('#overlay').removeClass('hidden');
+  $('#overlay_lost_connection').removeClass('hidden');
 });
 
 /*******************************************************************************

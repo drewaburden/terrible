@@ -47,7 +47,9 @@
 </div>
 
 <div id="overlay">
-<div id="overlay_join">
+<div id="overlay_screen"></div>
+
+<div id="overlay_join" class="overlay_child">
 <h1>Join Game</h1>
 <p>
 <input id="name_entry" placeholder="Username"></input><button onclick="join($('#name_entry').val())">Join</button><br>
@@ -63,8 +65,15 @@
 <button onclick="join('drake')">drake</button>
 </p>
 -->
-
 </div>
+
+<div id="overlay_lost_connection" class="overlay_child hidden">
+<h1>Lost Connection to Server</h1>
+<p>
+Whoops. Try refreshing?
+</p>
+</div>
+
 </div>
 
 </div>
