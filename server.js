@@ -67,7 +67,7 @@ app.use(function(req, res){
 * PUBLIC
 */
 io.on('connection', function (socket) {
-  log('INFO: ' + socket.handshake.address.address + ' connected');
+  log('INFO: ' + socket.request.connection.remoteAddress + ' connected');
   socket.emit('event', [EVENTS.SEND_DECK, Deck.getAllCards()]);
   socket.join('login');
   socket.on('req', function (data) {
