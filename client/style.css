@@ -99,6 +99,8 @@ h2 { margin-top: 0; margin-bottom: 15px; }
 
 #overlay_join input, #overlay_join button { font-size: 125%; }
 
+.error { color: #900; }
+
 @media only screen and (max-device-width: 719px), only screen and (max-width: 719px) {
 	.pane, .subpane { position: relative; left: 0 !important; top: 0 !important; height: auto; width: 100% !important; }
 	.subpane { padding: 0; }

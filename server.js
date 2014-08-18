@@ -112,6 +112,7 @@ function addPlayer(socket, name) {
   // TODO: allow rejoining
   // for now, don't allow any "duplicate" names
   if (name in players) {
+    socket.emit('event', [EVENTS.NAME_CONFLICT]);
     return
   }
 

@@ -46,6 +46,12 @@ function join(username) {
   $('#overlay_join').addClass('hidden');
 }
 
+function nameConflicted() {
+  $('#overlay_join').removeClass('hidden');
+  $('#join_error_username').removeClass('hidden');
+  $('#overlay').removeClass('hidden');
+}
+
 function play(cards) {
   clearTimeout(audio_lock);
   s.emit("req", [global.EVENTS.PLAY_CARDS, cards]);
@@ -163,6 +169,7 @@ s.on('event', function (data) {
     case global.EVENTS.ANNOUNCE_JUDGE: setJudge(data[1]); break;
     case global.EVENTS.UPDATE_STATE: updateToState(data[1]); break;
     case global.EVENTS.SEND_DECK: receiveDeck(data[1]); break;
+    case global.EVENTS.NAME_CONFLICT: nameConflicted(); break;
     default: break;
   }
 });
