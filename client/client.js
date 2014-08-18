@@ -13,7 +13,7 @@ var extra = 0;
 var play_cards = [];
 var current_judge;
 var played;
-var focused = true;
+var hidden_key;
 
 var audio_delay = 30000; // in ms
 var audio_lock;
@@ -108,9 +108,9 @@ function statePlaying(prompt_id) {
   played = false; 
 
   // set the prompt card
-  var text = prompts[prompt_id][0];
+  var text = '<p>' + prompts[prompt_id][0] + '</p>';
   if (prompts[prompt_id][1].length > 0) {
-    text += '<br><span class="subtext">' + prompts[prompt_id][1] + '</span>';
+    text += '<p class="subtext">' + prompts[prompt_id][1] + '</p>';
   }
   $('#black_text').html(text);
   extra = prompts[prompt_id][2];
@@ -214,10 +214,9 @@ function syncHand(hand) {
   var html = '';
   for (var i = 0; i < hand.length; i++) {
     html += '<div class="card white" onclick="prepareToPlay($(this))" ';
-    html += 'white_id="' + hand[i] + '">' + responses[hand[i]][0]
+    html += 'white_id="' + hand[i] + '"><p>' + responses[hand[i]][0] + '</p>';
     if (responses[hand[i]][1].length > 0) {
-          html += '<br><span class="subtext">' + responses[hand[i]][1];
-          html += '</span>';
+          html += '<p class="subtext">' + responses[hand[i]][1] + '</p>';
     }
     html += '</div>';
   }
@@ -265,9 +264,9 @@ function addResponses(user, cards) {
   var html = '<div class="cards" user="' + user + '" onclick="pick(\'' + user;
   html += '\')">';
   for (var i = 0; i < cards.length; i++) {
-    html += '<div class="card white">' + responses[cards[i]][0];
+    html += '<div class="card white"><p>' + responses[cards[i]][0] + '</p>';
     if (responses[cards[i]][1].length > 0) {
-      html += '<br><span class="subtext">' + responses[cards[i]][1] + '</span>';
+      html += '<p class="subtext">' + responses[cards[i]][1] + '</p>';
     }
     html += '</div>';
   }
@@ -287,7 +286,7 @@ function updateToState(gamestate) {
 * plays a notification sound
 */
 function audioNotify() {
-  if (use_audio && !focused) {
+  if (use_audio && document[hidden_key]) {
     document.getElementById('audio_notification').play();
   }
 }
@@ -296,9 +295,12 @@ function useAudio(use) {
   use_audio = use;
 }
 
-window.onfocus = function() {
-    focused = true;
-};
-window.onblur = function() {
-    focused = false;
-};
+if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+  hidden_key = "hidden";
+} else if (typeof document.mozHidden !== "undefined") {
+  hidden_key = "mozHidden";
+} else if (typeof document.msHidden !== "undefined") {
+  hidden_key = "msHidden";
+} else if (typeof document.webkitHidden !== "undefined") {
+  hidden_key = "webkitHidden";
+}

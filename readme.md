@@ -31,6 +31,7 @@ Responses: **text**, **subtext**
   * connection loss handling is incomplete
   * users newly joining won't receive a full game state until the next round
   * selection of new judge when old one leaves may favor the first player
+  * users who played cards when a judge leaves will lose those cards
 
 ## Planned Features
   * a way to see round history
