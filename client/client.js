@@ -14,6 +14,10 @@ var play_cards = [];
 var current_judge;
 var played;
 
+var audio_delay = 30000; // in ms
+var audio_lock;
+var use_audio = true;
+
 /*******************************************************************************
 * here we load the cards
 */
@@ -42,10 +46,12 @@ function join(username) {
 }
 
 function play(cards) {
+  clearTimeout(audio_lock);
   s.emit("req", [global.EVENTS.PLAY_CARDS, cards]);
 }
 
 function pick(user) {
+  clearTimeout(audio_lock);
   s.emit("req", [global.EVENTS.PICK_WINNER, user]);
 }
 
@@ -67,6 +73,7 @@ s.on('msg', function (data) {
 */
 s.on('state', function (data) {
   log('new game state: ' + data);
+  clearTimeout(audio_lock);
   state = data[0];
   switch(state) {
     case global.STATES.LOBBY: stateLobby(); break;
@@ -119,6 +126,7 @@ function stateJudging() {
   clearCenter();
   if (my_username == current_judge) {
     $('#played_whites').addClass('active');
+    audio_lock = setTimeout(audioNotify, audio_delay);
   }
 }
 
@@ -191,6 +199,10 @@ function setJudge(username) {
   // place screen over hand if judge
   if (my_username == current_judge) {
     $('#judge_overlay').removeClass('hidden');
+  }
+  // set notification timer for all other players
+  else {
+    audio_lock = setTimeout(audioNotify, audio_delay);
   }
 }
 
@@ -268,4 +280,17 @@ function addResponses(user, cards) {
 */
 function updateToState(gamestate) {
   //update the UI here
+}
+
+/*******************************************************************************
+* plays a notification sound
+*/
+function audioNotify() {
+  if (use_audio) {
+    document.getElementById('audio_notification').play();
+  }
+}
+
+function useAudio(use) {
+  use_audio = use;
 }

@@ -14,6 +14,8 @@
 <div id="container">
 
 <div id="header">
+<input type="checkbox" checked id="use_audio" onchange="useAudio(this.checked)">
+<label for="use_audio">Play Reminder</label>
 </div>
 
 <div class="pane" id="left">
@@ -77,5 +79,11 @@ Whoops. Try refreshing?
 </div>
 
 </div>
+
+<audio id="audio_notification" class="hidden">
+<source src="audio/alert.mp3" type="audio/mpeg">
+<source src="audio/alert.ogg" type="audio/ogg">
+</audio>
+
 </body>
 </html>

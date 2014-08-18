@@ -34,4 +34,3 @@ Responses: **text**, **subtext**
 
 ## Planned Features
   * a way to see round history
-  * optional notification sounds
