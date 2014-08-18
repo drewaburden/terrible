@@ -13,6 +13,7 @@ var extra = 0;
 var play_cards = [];
 var current_judge;
 var played;
+var focused = true;
 
 var audio_delay = 30000; // in ms
 var audio_lock;
@@ -286,7 +287,7 @@ function updateToState(gamestate) {
 * plays a notification sound
 */
 function audioNotify() {
-  if (use_audio) {
+  if (use_audio && !focused) {
     document.getElementById('audio_notification').play();
   }
 }
@@ -294,3 +295,10 @@ function audioNotify() {
 function useAudio(use) {
   use_audio = use;
 }
+
+window.onfocus = function() {
+    focused = true;
+};
+window.onblur = function() {
+    focused = false;
+};
