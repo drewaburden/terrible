@@ -34,4 +34,5 @@ Responses: **text**, **subtext**
   * users who played cards when a judge leaves will lose those cards
 
 ## Planned Features
+
   * a way to see round history
