@@ -40,18 +40,37 @@ function log(text) {
 }
 
 /*******************************************************************************
+* Prints the usage information to the console
+*/
+function printUsage() {
+	log("\nusage:\tnode server.js deck_id\n" +
+    	"\n" +
+    	"\t\tdeck_id\n" +
+    	"\t\t\ta deck folder located in the ./decks/ folder\n" + 
+    	"\t\t\tthat contains a prompts.json and a responses.json that conforms\n" + 
+    	"\t\t\tto the structure detailed in readme.md\n");
+}
+
+/*******************************************************************************
 * called upon server start
 * PRIVATE
 */
 function init() {
   deck_id = process.argv[2];
-  server.listen(server_port);
-  log('STATE: INIT (setting up server)');
-  DeckMgr = new DeckManager(deck_id);
-  RoundMgr = new RoundManager();
-  players = {};
-  socket_lookup = {};
-  handleLobby();
+  // Check if the user is requesting help or didn't enter valid arguments
+  if (deck_id == null || deck_id == "help" || deck_id == "/?") {
+    printUsage();
+    process.exit();
+  }
+  else {
+    server.listen(server_port);
+    log('STATE: INIT (setting up server)');
+    DeckMgr = new DeckManager(deck_id);
+    RoundMgr = new RoundManager();
+    players = {};
+    socket_lookup = {};
+    handleLobby();
+  }
 }
 
 /*******************************************************************************

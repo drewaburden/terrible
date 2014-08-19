@@ -3,10 +3,16 @@ var DeckLoader = require(__base + '/server/DeckLoader').DeckLoader;
 module.exports = DeckManager;
 function DeckManager(deck_id) {
 	this.loader = new DeckLoader(deck_id);
-	this.prompts = this.loader.loadPromptsFromFile();
-	this.responses = this.loader.loadResponsesFromFile();
+	try {
+		this.prompts = this.loader.loadPromptsFromFile();
+		this.responses = this.loader.loadResponsesFromFile();
+	} catch(exception) {
+    	console.log("\nError loading the deck with the deck_id '" + deck_id + "'\nShutting down.\n");
+    	process.exit();
+	}
 	this.responses_draw = this.createResponsesDraw();
 	this.prompts_draw = this.createPromptsDraw();
+	return null;
 }
 
 // Get x number of cards from responses_draw array
