@@ -54,7 +54,7 @@
 <div id="overlay_join" class="overlay_child">
 <h1>Join Game</h1>
 <p>
-<input id="name_entry" placeholder="Username"></input><button onclick="join($('#name_entry').val())">Join</button><br>
+<form><input id="name_entry" placeholder="Username"></input><button type="submit" formaction="javascript:join($('#name_entry').val())">Join</button></form><br>
 <small><em>(letters, numbers, and underscores only)</em></small>
 </p>
 <p id="join_error_username" class="error hidden">That username is already in use.</p>
